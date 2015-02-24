@@ -13,3 +13,20 @@ cmsenv
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 
 #Grab the relevant Macros and python scripts: 
+
+git clone -b stable-version https://github.com/rpatelCERN/CombineTools.git
+
+cd CombineTools
+
+//for running tests you can use my version of the input analysis files from eos at CERN : 
+source getInputFiles.csh //makes the input files dir and also downloads files (don't do this if you are using your own)
+//compile the macro for making datacards
+
+root -b .L  macros/MakeCombineDataCards.C++
+
+//need to make input histograms to define the binning:
+root -b 
+root>.L macros/MakeCombineDataCards_C.so
+root> MakeInputHiso("Signal", 4); //make histograms of the signal region for 4/fb 
+root>.x RunDataCards.C //gives 72 bin datacards for each signal model
+
