@@ -26,7 +26,18 @@ root -b .L  macros/MakeCombineDataCards.C++
 
 //need to make input histograms to define the binning:
 root -b 
-root>.L macros/MakeCombineDataCards_C.so
-root> MakeInputHiso("Signal", 4); //make histograms of the signal region for 4/fb 
-root>.x RunDataCards.C //gives 72 bin datacards for each signal model
 
+root>.L macros/MakeCombineDataCards_C.so
+
+root> MakeInputHiso("Signal", 4); //make histograms of the signal region for 4/fb 
+
+root>.x RunDataCards.C //gives 72 bin datacards for each signal model in the directory DataCards
+
+exit root
+
+Combine all the cards into a single file for each model :
+e.g ./python/QuickCombineCards.py T1tttt 1500 100
+
+//compute significance
+
+combine -M ProfileLikelihood AllBinsT1tttt1500_Lumi4.dat —signif
