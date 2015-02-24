@@ -1,0 +1,12 @@
+max 1 number of channels 
+jmax 1 number of backgrounds (QCD, Zinv, WJ, ttbar) 
+kmax * nuissance
+------------
+bin 71
+observation 4
+bin 71 71
+process sig bkg
+process 0 1
+rate 4.0 0.0
+BqcdgmN gmN 0 - 1.0
+BqcdLog lnN  - 1.40
