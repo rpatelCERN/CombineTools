@@ -325,8 +325,8 @@ void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
     fprintf(fp,"\\caption{TEST}\n");
     fprintf(fp,"\\end{table}\n");
     fprintf(fp,"\\end{document}\n"); //made Latex File with Yields
-    fclose(fp);
     f0->Close();
+    fclose(fp);
 }
 
 //THis prints the data cards with specified Uncertainties (entered by hand for now)
@@ -344,7 +344,7 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
         if(Options=="T1bbbb" && mGlu==1000)sig[i]=sig4b1000[i];
         obs[i]=(qcd[i]+ zi[i]+wj[i]+ttbar[i] + (mu*sig[i]));
     }
-    float qcdscale=1.0;
+    float qcdscale=10.0;
     float ttbarScale=1.0;
 
     TString str=(TString::Format("./DataCards/SensStudyLumi%2.2f_Bin%d_M%d_m%d_%s.dat",lumi,bin, mGlu, MLSP,Options.Data())).Data();
@@ -358,8 +358,8 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, "------------\n");
     fprintf(fp, "bin Bin%d BinContQ%d BinContW%d ", bin,bin, bin);
     //4 bins
-    fprintf(fp, "\n observation %g %g %g ", obs[bin], qcdscale*qcd[bin],ttbarScale*(wj[bin]+ttbar[bin]));
-    //4 Expected Count bins (MC)
+   fprintf(fp, "\n observation %g %g %g ", obs[bin], qcdscale*qcd[bin],ttbarScale*(wj[bin]+ttbar[bin]));
+   //4 Expected Count bins (MC)
     fprintf(fp, "\nbin Bin%d  Bin%d  Bin%d  Bin%d ", bin,bin, bin, bin);
     fprintf(fp, "BinContQ%d  BinContQ%d  BinContQ%d  BinContQ%d ",bin, bin,bin, bin);
     fprintf(fp, "BinContW%d  BinContW%d  BinContW%d  BinContW%d ", bin,bin, bin, bin);
@@ -374,64 +374,71 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, "%d %d %d %d ",0, 1,2,3);
     
     //NOW THIS IS MY EXPECTED SIGNAL REGION!
-    //    fprintf(fp, "\nrate %g %g %g %g %g  ", sig[bin], qcd[bin],zi[bin],wj[bin],ttbar[bin]);
-    
     fprintf(fp, "\nrate %g ", sig[bin]);
     if(qcd[bin]>0.0000000000000000001)fprintf(fp, " %g ", qcd[bin]);
-    else fprintf(fp, " %g ",1.);
+    else fprintf(fp, " %g ",0.001);
     
     fprintf(fp, " %g ", zi[bin]);
-    
     if(wj[bin]+ttbar[bin]>0.0000000000000000001)fprintf(fp, " %g ",wj[bin]+ttbar[bin]);
-    else fprintf(fp, " %g ",1.);
+    else fprintf(fp, " %g ",0.001);
     
-   // if(ttbar[bin]>0.0000000000000000001)fprintf(fp, " %g ",ttbar[bin]);
-   // else fprintf(fp, " %g ",1.);
+
     
     
     //QCD Region 1
     fprintf(fp, " %g ",0.);
     if(qcd[bin]>0.0000000000000000001)fprintf(fp, " %g ",qcdscale*qcd[bin]);
-    else fprintf(fp, " %g ",qcdscale*1.);
+    else fprintf(fp, " %g ",qcdscale*0.001);
     //fprintf(fp, " %g ",10.);
     fprintf(fp, " %g %g ",0., 0.);
     
     //WJ/TTbar Region 1
     fprintf(fp, " %g %g %g",0.,0.,0.0);
     if(wj[bin]+ttbar[bin]>0.0000000000000000001)fprintf(fp, " %g ",ttbar[bin]+wj[bin]);
-    else fprintf(fp, " %g ",1.);
+    else fprintf(fp, " %g ", ttbarScale*0.001);
     fprintf(fp, "\n");
    
 
     float logUErr=100.;
-   // while(qcdscale*qcd[bin]/logUErr>0.1)logUErr=logUErr+(1*logUErr);
+if(qcd[bin]*qcdscale>0.0000000000000000001){
     fprintf(fp, "rateBqcd%d lnU - %8.1f - - ",bin, logUErr );
     fprintf(fp, " - %8.1f - - ",logUErr);
-    //fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - \n");
-    
+    fprintf(fp, " - - - -\n ");
+    }
+else {
+	logUErr=10000;
+    fprintf(fp, "rateBqcd%d lnU - %8.1f - - ",bin, logUErr );
+    fprintf(fp, " - %8.1f - - ",logUErr);
+    fprintf(fp, " - - - -\n ");
+
+}
     
     fprintf(fp, "LogBqcd%d lnN - %g - -  ",bin, 1.3 );
     fprintf(fp, " - - - -  ");
-    //fprintf(fp, " - - - -  ");
     fprintf(fp, " - - - -  \n");
     
-   // while(wj[bin]/logUErr>0.1)logUErr=logUErr+(1.0*logUErr);
+    if(ttbar[bin]*ttbarScale>0.0000000000000000001){
+        logUErr=100;
     fprintf(fp, "rateBW%d lnU - - - %8.1f  ",bin, logUErr );
     fprintf(fp, " - - - -  ");
-    fprintf(fp, " - - - %8.1f  \n",logUErr);
-    //fprintf(fp, " - - - -  \n");
-    
+    fprintf(fp, " - - - %8.1f  \n ",logUErr);
+    }
+    else{
+	logUErr=10000;
+    fprintf(fp, "rateBW%d lnU - - - %8.1f  ",bin, logUErr );
+    fprintf(fp, " - - - -  ");
+    fprintf(fp, " - - - %8.1f  \n ",logUErr);	
+
+    }
     fprintf(fp, "LogBW%d lnN - - - %g  ",bin, 1.3 );
     fprintf(fp, " - - - -  ");
-    //fprintf(fp, " - - - -  ");
     fprintf(fp, " - - - -  \n");
     
 
     
     fprintf(fp, "LogBZ%d lnN - - %g - ",bin, 1.3 );
     fprintf(fp, " - - - - ");
-  //  fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - \n");
 
     
