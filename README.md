@@ -51,6 +51,6 @@ Output:
 Computing limit starting from observation
 
 -- Profile Likelihood --
-Significance: 2.5925
-(p-value = 0.00476407)
-Done in 0.14 min (cpu), 0.14 min (real)
+Significance: 2.62241
+(p-value = 0.00436557)
+Done in 0.09 min (cpu), 0.09 min (real)
