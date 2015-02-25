@@ -1,0 +1,15 @@
+imax 3 number of channels
+jmax 3 number of backgrounds (QCD, Zinv, WJttbar)
+kmax * nuissance
+------------
+bin Bin26 BinContQ26 BinContW26 
+ observation 49.0123 276.76 14.5406 
+bin Bin26  Bin26  Bin26  Bin26 BinContQ26  BinContQ26  BinContQ26  BinContQ26 BinContW26  BinContW26  BinContW26  BinContW26 
+process sig QCD Zinv WJttbar sig QCD Zinv WJttbar  sig QCD Zinv WJttbar  
+process 0 1 2 3 0 1 2 3 0 1 2 3 
+rate 0.00677817  27.676  6.78885  14.5406  0  276.76  0 0  0 0 0 14.5406 
+rateBqcd26 lnU -    100.0 - -  -    100.0 - -  - - - -
+ LogBqcd26 lnN - 1.3 - -   - - - -   - - - -  
+rateBW26 lnU - - -    100.0   - - - -   - - -    100.0  
+ LogBW26 lnN - - - 1.3   - - - -   - - - -  
+LogBZ26 lnN - - 1.3 -  - - - -  - - - -  - - - - 
