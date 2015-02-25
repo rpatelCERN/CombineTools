@@ -44,41 +44,41 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
     float NJets[4]={4, 7,9,99};
     //these are in an eos area on lxplus:/eos/cms/store/user/rpatel/RA2b
     TChain t1tt1500("TreeMaker2/ReducedTree");
-    t1tt1500.Add(TString::Format("../InputFiles/ReducedTree_SMSttttM1500.root"));
+    t1tt1500.Add(TString::Format("./InputFiles/ReducedTree_SMSttttM1500.root"));
     TChain t1tt1200("TreeMaker2/ReducedTree");
-    t1tt1200.Add(TString::Format("../InputFiles/ReducedTree_SMSttttM1200.root"));
+    t1tt1200.Add(TString::Format("./InputFiles/ReducedTree_SMSttttM1200.root"));
     TChain t1bb1000("TreeMaker2/ReducedTree");
-    t1bb1000.Add(TString::Format("../InputFiles/ReducedTree_SMSbbbbM1000.root"));
+    t1bb1000.Add(TString::Format("./InputFiles/ReducedTree_SMSbbbbM1000.root"));
     TChain t1bb1500("TreeMaker2/ReducedTree");
-    t1bb1500.Add(TString::Format("../InputFiles/ReducedTree_SMSbbbbM1500.root"));
+    t1bb1500.Add(TString::Format("./InputFiles/ReducedTree_SMSbbbbM1500.root"));
     TChain t1qq1000("TreeMaker2/ReducedTree");
-    t1qq1000.Add(TString::Format("../InputFiles/ReducedTree_SMSqqqqM1000.root"));
+    t1qq1000.Add(TString::Format("./InputFiles/ReducedTree_SMSqqqqM1000.root"));
     TChain t1qq1400("TreeMaker2/ReducedTree");
-    t1qq1400.Add(TString::Format("../InputFiles/ReducedTree_SMSqqqqM1400.root"));
+    t1qq1400.Add(TString::Format("./InputFiles/ReducedTree_SMSqqqqM1400.root"));
     
     TChain QCDCH("TreeMaker2/ReducedTree") ;
-    QCDCH.Add("../InputFiles/ReducedTree_QCDHT500.root");
-    QCDCH.Add("../InputFiles/ReducedTree_QCDHT250.root");
-    QCDCH.Add("../InputFiles/ReducedTree_QCDHT1000.root");
+    QCDCH.Add("./InputFiles/ReducedTree_QCDHT500.root");
+    QCDCH.Add("./InputFiles/ReducedTree_QCDHT250.root");
+    QCDCH.Add("./InputFiles/ReducedTree_QCDHT1000.root");
 
     TChain WJets("TreeMaker2/ReducedTree");
-    WJets.Add("../InputFiles/ReducedTree_WJ100.root");
-    WJets.Add("../InputFiles/ReducedTree_WJ200.root");
-    WJets.Add("../InputFiles/ReducedTree_WJ400.root");
-    WJets.Add("../InputFiles/ReducedTree_WJ600Merged.root");
+    WJets.Add("./InputFiles/ReducedTree_WJ100.root");
+    WJets.Add("./InputFiles/ReducedTree_WJ200.root");
+    WJets.Add("./InputFiles/ReducedTree_WJ400.root");
+    WJets.Add("./InputFiles/ReducedTree_WJ600Merged.root");
 
     TChain tt("TreeMaker2/ReducedTree");
-    tt.Add("../InputFiles/ReducedTree_TBarToLeptons_t.root");
-    tt.Add("../InputFiles/ReducedTree_TToLeptons_t.root");
-    tt.Add("../InputFiles/ReducedTree_TTJetsMSDecaysCKM.root");
-    tt.Add("../InputFiles/ReducedTree_T_tW.root");
-    tt.Add("../InputFiles/ReducedTree_Tbar_tW.root");
+    tt.Add("./InputFiles/ReducedTree_TBarToLeptons_t.root");
+    tt.Add("./InputFiles/ReducedTree_TToLeptons_t.root");
+    tt.Add("./InputFiles/ReducedTree_TTJetsMSDecaysCKM.root");
+    tt.Add("./InputFiles/ReducedTree_T_tW.root");
+    tt.Add("./InputFiles/ReducedTree_Tbar_tW.root");
     
     TChain Zinv("TreeMaker2/ReducedTree") ;
-    Zinv.Add("../InputFiles/ReducedTree_ZInv100.root");
-    Zinv.Add("../InputFiles/ReducedTree_ZInv200.root");
-    Zinv.Add("../InputFiles/ReducedTree_ZInv400.root");
-    Zinv.Add("../InputFiles/ReducedTree_ZInv600.root");
+    Zinv.Add("./InputFiles/ReducedTree_ZInv100.root");
+    Zinv.Add("./InputFiles/ReducedTree_ZInv200.root");
+    Zinv.Add("./InputFiles/ReducedTree_ZInv400.root");
+    Zinv.Add("./InputFiles/ReducedTree_ZInv600.root");
     
     
     
@@ -325,6 +325,7 @@ void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
     fprintf(fp,"\\caption{TEST}\n");
     fprintf(fp,"\\end{table}\n");
     fprintf(fp,"\\end{document}\n"); //made Latex File with Yields
+    fclose(fp);
     f0->Close();
 }
 
@@ -343,10 +344,10 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
         if(Options=="T1bbbb" && mGlu==1000)sig[i]=sig4b1000[i];
         obs[i]=(qcd[i]+ zi[i]+wj[i]+ttbar[i] + (mu*sig[i]));
     }
-    float qcdscale=10.0;
+    float qcdscale=1.0;
     float ttbarScale=1.0;
 
-    TString str=(TString::Format("../DataCards/SensStudyLumi%2.2f_Bin%d_M%d_m%d_%s.dat",lumi,bin, mGlu, MLSP,Options.Data())).Data();
+    TString str=(TString::Format("./DataCards/SensStudyLumi%2.2f_Bin%d_M%d_m%d_%s.dat",lumi,bin, mGlu, MLSP,Options.Data())).Data();
     // const char outputfilename[100]=str.Data();
     
     FILE* fp = fopen(  str.Data(), "w" ) ;
@@ -357,9 +358,7 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, "------------\n");
     fprintf(fp, "bin Bin%d BinContQ%d BinContW%d ", bin,bin, bin);
     //4 bins
-    if(qcd[bin]>0.0000000000000000001 && wj[bin]+ttbar[bin]>0.0000000001)fprintf(fp, "\n observation %g %g %g ", obs[bin], qcdscale*qcd[bin],ttbarScale*(wj[bin]+ttbar[bin]));
-    if(qcd[bin]<0.0000000000000000001 && wj[bin]+ttbar[bin]>0.0000000001) fprintf(fp, "\n observation %g %g %g ", obs[bin], qcdscale,ttbarScale*(wj[bin]+ttbar[bin]));
-        if(qcd[bin]>0.0000000000000000001 && wj[bin]+ttbar[bin]>0.0000000001) fprintf(fp, "\n observation %g %g %g ", obs[bin], qcd[bin],ttbarScale);
+    fprintf(fp, "\n observation %g %g %g ", obs[bin], qcdscale*qcd[bin],ttbarScale*(wj[bin]+ttbar[bin]));
     //4 Expected Count bins (MC)
     fprintf(fp, "\nbin Bin%d  Bin%d  Bin%d  Bin%d ", bin,bin, bin, bin);
     fprintf(fp, "BinContQ%d  BinContQ%d  BinContQ%d  BinContQ%d ",bin, bin,bin, bin);
@@ -408,31 +407,31 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
    // while(qcdscale*qcd[bin]/logUErr>0.1)logUErr=logUErr+(1*logUErr);
     fprintf(fp, "rateBqcd%d lnU - %8.1f - - ",bin, logUErr );
     fprintf(fp, " - %8.1f - - ",logUErr);
-    fprintf(fp, " - - - - ");
+    //fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - \n");
     
     
     fprintf(fp, "LogBqcd%d lnN - %g - -  ",bin, 1.3 );
     fprintf(fp, " - - - -  ");
-    fprintf(fp, " - - - -  ");
+    //fprintf(fp, " - - - -  ");
     fprintf(fp, " - - - -  \n");
     
    // while(wj[bin]/logUErr>0.1)logUErr=logUErr+(1.0*logUErr);
     fprintf(fp, "rateBW%d lnU - - - %8.1f  ",bin, logUErr );
     fprintf(fp, " - - - -  ");
-    fprintf(fp, " - - - %8.1f  ",logUErr);
-    fprintf(fp, " - - - -  \n");
+    fprintf(fp, " - - - %8.1f  \n",logUErr);
+    //fprintf(fp, " - - - -  \n");
     
     fprintf(fp, "LogBW%d lnN - - - %g  ",bin, 1.3 );
     fprintf(fp, " - - - -  ");
-    fprintf(fp, " - - - -  ");
+    //fprintf(fp, " - - - -  ");
     fprintf(fp, " - - - -  \n");
     
 
     
     fprintf(fp, "LogBZ%d lnN - - %g - ",bin, 1.3 );
     fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - ");
+  //  fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - \n");
 
     
