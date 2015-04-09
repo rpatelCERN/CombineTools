@@ -15,6 +15,7 @@
 #include <TGraph.h>
 #include <TCanvas.h>
 #include<TH1F.h>
+#include<TRandom.h>
 const int totalbins=72; //hard coded to default 72 analysis bins
 
 float sig4t1500[totalbins];
@@ -24,14 +25,28 @@ float sig4q1000[totalbins];
 float sig4b1500[totalbins];
 float sig4b1000[totalbins];
 
+float sig4t1500raw[totalbins];
+float sig4t1200raw[totalbins];
+float sig4q1400raw[totalbins];
+float sig4q1000raw[totalbins];
+float sig4b1500raw[totalbins];
+float sig4b1000raw[totalbins];
 
+int Bbins[totalbins];
+int njbins[totalbins];
+int mbins[totalbins];
 float qcd[totalbins];
 float zi[totalbins];
 float wj[totalbins];
 float ttbar[totalbins];
+float SL[totalbins];
+float LDP[totalbins];
+float GJet[totalbins];
 
-float obs[totalbins];
-void MakeInputHiso(TString Options="Signal", float lumi=4){  //all input files
+void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
+    
+    std::cout << "Processing with option = " << Options << std::endl;
+
     const int nBinsjets = 3 ;
     const int nBinsBjets = 4 ;
     const int nBinsMHT = 3 ;
@@ -41,69 +56,74 @@ void MakeInputHiso(TString Options="Signal", float lumi=4){  //all input files
     float MHTBinRectangular[4]={200, 500., 750.,9999.};
     float HTBinRectangular[4]={500., 800., 1200.,9999.};//can do 150 to
     
-    char bcutstringRectangular[nBinsBjets][100] = { "BTags30==0", "BTags30==1","BTags30==2", "BTags30>=3" } ;
+    char bcutstringRectangular[nBinsBjets][100] = { "BTags==0", "BTags==1","BTags==2", "BTags>=3" } ;
     float NJets[4]={4, 7,9,99};
     //these are in an eos area on lxplus:/eos/cms/store/user/rpatel/RA2b
-    TChain t1tt1500("TreeMaker2/ReducedTree");
-    t1tt1500.Add(TString::Format("./SignalFiles/ReducedTree_SMSttttM1500.root"));
-    TChain t1tt1200("TreeMaker2/ReducedTree");
-    t1tt1200.Add(TString::Format("./SignalFiles/ReducedTree_SMSttttM1200.root"));
-    TChain t1bb1000("TreeMaker2/ReducedTree");
-    t1bb1000.Add(TString::Format("./SignalFiles/ReducedTree_SMSbbbbM1000.root"));
-    TChain t1bb1500("TreeMaker2/ReducedTree");
-    t1bb1500.Add(TString::Format("./SignalFiles/ReducedTree_SMSbbbbM1500.root"));
-    TChain t1qq1000("TreeMaker2/ReducedTree");
-    t1qq1000.Add(TString::Format("./SignalFiles/ReducedTree_SMSqqqqM1000.root"));
-    TChain t1qq1400("TreeMaker2/ReducedTree");
-    t1qq1400.Add(TString::Format("./SignalFiles/ReducedTree_SMSqqqqM1400.root"));
+    TChain t1tt1500("TreeMaker2/PreSelection");
+    t1tt1500.Add(TString::Format("./LatestSynchFiles/SMStttt1500.root"));
+    TChain t1tt1200("TreeMaker2/PreSelection");
+    t1tt1200.Add(TString::Format("./LatestSynchFiles/SMStttt1200.root"));
+    TChain t1bb1000("TreeMaker2/PreSelection");
+    t1bb1000.Add(TString::Format("./LatestSynchFiles/SMSbbbb1000.root"));
+    TChain t1bb1500("TreeMaker2/PreSelection");
+    t1bb1500.Add(TString::Format("./LatestSynchFiles/SMSbbbb1500.root"));
+    TChain t1qq1000("TreeMaker2/PreSelection");
+    t1qq1000.Add(TString::Format("./LatestSynchFiles/SMSqqqq1000.root"));
+    TChain t1qq1400("TreeMaker2/PreSelection");
+    t1qq1400.Add(TString::Format("./LatestSynchFiles/SMSqqqq1400.root"));
     
-    TChain QCDCH("TreeMaker2/ReducedTree") ;
-    QCDCH.Add("./QCD/ReducedTree_QCDHT500.root");
-    QCDCH.Add("./QCD/ReducedTree_QCDHT250.root");
-    QCDCH.Add("./QCD/ReducedTree_QCDHT1000.root");
+    TChain QCDCH("TreeMaker2/PreSelection") ;
+    QCDCH.Add("./LatestSynchFiles/QCDHT.root");
 
-    TChain WJets("TreeMaker2/ReducedTree");
-    WJets.Add("./WJets/ReducedTree_WJ100.root");
-    WJets.Add("./WJets/ReducedTree_WJ200.root");
-    WJets.Add("./WJets/ReducedTree_WJ400.root");
-    WJets.Add("./WJets/ReducedTree_WJ600Merged.root");
+    TChain WJets("TreeMaker2/PreSelection");
+    WJets.Add("./LatestSynchFiles/WJ.root");
 
-    TChain tt("TreeMaker2/ReducedTree");
-    tt.Add("./TTJets/ReducedTree_TBarToLeptons_t.root");
-    tt.Add("./TTJets/ReducedTree_TToLeptons_t.root");
-    tt.Add("./TTJets/ReducedTree_TTJetsMSDecaysCKM.root");
-    tt.Add("./TTJets/ReducedTree_T_tW.root");
-    tt.Add("./TTJets/ReducedTree_Tbar_tW.root");
+    TChain tt("TreeMaker2/PreSelection");
+    tt.Add("./LatestSynchFiles/TTJets.root");
     
-    TChain Zinv("TreeMaker2/ReducedTree") ;
-    Zinv.Add("./ZInv/ReducedTree_ZInv100.root");
-    Zinv.Add("./ZInv/ReducedTree_ZInv200.root");
-    Zinv.Add("./ZInv/ReducedTree_ZInv400.root");
-    Zinv.Add("./ZInv/ReducedTree_ZInv600.root");
+    TChain Zinv("TreeMaker2/PreSelection") ;
+    Zinv.Add("./LatestSynchFiles/ZJ.root");
     
-    
+    TChain GJets("TreeMaker2/PreSelection") ;
+    GJets.Add("./LatestSynchFiles/GJ.root");
+
+    TChain DY("TreeMaker2/PreSelection") ;
+    DY.Add("./LatestSynchFiles/DY.root");
     
     char commoncuts[10000] ;
     TString fileBaseName;
     if(Options=="Signal"){
-        sprintf( commoncuts,"HT30>500 && NJets30>=4 && MHT>200 && (Muons==0 && Electrons==0) && abs(minDeltaPhiN)>4.0 && isoTracks==0" ); //signal region selection
+        sprintf( commoncuts,"HT>500 && NJets>=4 && MHT>200 && (MuonsNum==0 && ElectronsNum==0) && abs(minDeltaPhiN)>4.0 && isoTracks==0" ); //signal region selection
         fileBaseName=TString::Format("Bins4DBINS_Lumi%2.2ffb.root",lumi);
     }
     if(Options=="LDP"){
-        sprintf( commoncuts,"HT30>500 && NJets30>=4 && MHT>200 && (Muons==0 && Electrons==0) && abs(minDeltaPhiN)<4.0 && isoTracks==0" ); //LowDelPhi region selection
+        sprintf( commoncuts,"HT>500 && NJets>=4 && MHT>200 && (MuonsNum==0 && ElectronsNum==0) && abs(minDeltaPhiN)<4.0 && isoTracks==0" ); //LowDelPhi region selection
         fileBaseName=TString::Format("Bins4DLDP_Lumi%2.2ffb.root",lumi);
-
     }
-    if(Options=="SL"){
-        sprintf( commoncuts,"HT30>500 && NJets30>=4 && MHT>200 && (Muons==1 || Electrons==1) && abs(minDeltaPhiN)>4.0 && isoTracks==0" );//Single Lepton region selection
-        fileBaseName=TString::Format("Bins4DSL_Lumi%2.2ffb.root",lumi);
-
+    if(Options=="SLEl"){
+        sprintf( commoncuts,"(HT>500 && NJets>=4 && MHT>200 && abs(minDeltaPhiN)>4.0 && (MuonsNum==0 && ElectronsNum==1) && ( sqrt(2 *METPt*ElectronsPt[0]*(1-cos(ElectronsPhi[0]-METPhi)))<100  ))");//Single Lepton region selection
+        fileBaseName=TString::Format("Bins4DSLEl_Lumi%2.2ffb.root",lumi);
     }
+    if(Options=="SLMu"){
+        sprintf( commoncuts,"(HT>500 && NJets>=4 && MHT>200 && abs(minDeltaPhiN)>4.0 && (MuonsNum==1 && ElectronsNum==0) && ( sqrt(2 *METPt*MuonsPt[0]*(1-cos(MuonsPhi[0]-METPhi)))<100  ))");//Single Lepton region selection
+        fileBaseName=TString::Format("Bins4DSLMu_Lumi%2.2ffb.root",lumi);
+    }
+    if(Options=="GJet"){
+        sprintf( commoncuts,"(HTnoPhotons>500 && NJets>=4 && MHTnoPhotons>200 && abs(minDeltaPhiNnoPhotons)>4.0 && (Photons == 1))");//Single Lepton region selection
+        fileBaseName=TString::Format("Bins4DGJet_Lumi%2.2ffb.root",lumi);
+    }
+    if(Options=="DYMu"){
+        sprintf( commoncuts,"(HT>500 && NJets>=4 && MHT>200 && abs(minDeltaPhiN)>4.0 && (MuonsNum==2 && ElectronsNum==0))");//Single Lepton region selection
+        fileBaseName=TString::Format("Bins4DYMu_Lumi%2.2ffb.root",lumi);
+    }
+
     char weightstring[10000];
-    sprintf(weightstring, "*(weight*%2.2f)", lumi*1000); //bkg xsec weight
+    sprintf(weightstring, "*(lheWeight*%e)", lumi); //bkg xsec weight
     
     char arg1[1000] ;
     char cuts[10000];
+    char cutsUW[10000];
+
     //yields stored in a TH3* (one for each btag) so 4D
     TH3F*sig4t1200_[4];
     TH3F*sig4t1500_[4];
@@ -113,15 +133,27 @@ void MakeInputHiso(TString Options="Signal", float lumi=4){  //all input files
     TH3F*sig4q1400_[4];
     TH3F*sig4q1000_[4];
     
+    TH3F*sig4t1200Raw_[4];
+    TH3F*sig4t1500Raw_[4];
+    
+    TH3F*sig4b1500Raw_[4];
+    TH3F*sig4b1000Raw_[4];
+    TH3F*sig4q1400Raw_[4];
+    TH3F*sig4q1000Raw_[4];
+    
     TH3F*qcd_[4];
     TH3F*tt_[4];
     TH3F*WJ_[4];
     TH3F*ZI_[4];
-    
+    TH3F*GJ_[4];
+    TH3F*DY_[4];
+
     //REALLY NEED TO ONLY DO THIS ONCE for the same binning and a particular luminosity scale
     TFile*f0=new TFile(TString::Format("%s", fileBaseName.Data()).Data(), "RECREATE");
     for(int b=0; b<nBinsBjets; ++b){
         
+        std::cout << "Nb = " << b << std::endl;
+
         sig4t1500_[b]=new TH3F(TString::Format("sig4t1500__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         sig4t1200_[b]=new TH3F(TString::Format("sig4t1200__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         
@@ -132,55 +164,119 @@ void MakeInputHiso(TString Options="Signal", float lumi=4){  //all input files
         sig4q1000_[b]=new TH3F(TString::Format("sig4q1000__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         sig4q1400_[b]=new TH3F(TString::Format("sig4q1400__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         
+        
+        sig4t1500Raw_[b]=new TH3F(TString::Format("sig4t1500Raw__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
+        sig4t1200Raw_[b]=new TH3F(TString::Format("sig4t1200Raw__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
+        
+        
+        sig4b1500Raw_[b]=new TH3F(TString::Format("sig4b1500Raw__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
+        sig4b1000Raw_[b]=new TH3F(TString::Format("sig4b1000Raw__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
+        
+        sig4q1000Raw_[b]=new TH3F(TString::Format("sig4q1000Raw__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
+        sig4q1400Raw_[b]=new TH3F(TString::Format("sig4q1400Raw__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         qcd_[b]=new TH3F(TString::Format("qcd__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular, nBinsHT,HTBinRectangular );
         tt_[b]=new TH3F(TString::Format("tt__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         WJ_[b]=new TH3F(TString::Format("WJ__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         ZI_[b]=new TH3F(TString::Format("ZI__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
-        
+        GJ_[b]=new TH3F(TString::Format("GJ__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
+        DY_[b]=new TH3F(TString::Format("DY__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
+
         sprintf( cuts, "(%s && %s )%s", commoncuts,bcutstringRectangular[b],weightstring );
+        sprintf( cutsUW, "(%s && %s )", commoncuts,bcutstringRectangular[b] );
+
         //HT30:MHT:NJets30
-        
-        sprintf( arg1, TString::Format("HT30:MHT:NJets30>>sig4t1500__b%d",b).Data()) ;
+        string HTString = "HT";
+        string MHTString  = "MHT";
+        string NJString = "NJets";
+        if(Options=="GJet"){
+            HTString = "HTnoPhotons";
+            MHTString = "MHTnoPhotons";
+        }
+
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1tt1500.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4t1500__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;
         t1tt1500.Draw( arg1, cuts );
-        sprintf( arg1, TString::Format("HT30:MHT:NJets30>>sig4t1200__b%d",b).Data()) ;
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1tt1200.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4t1200__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;
         t1tt1200.Draw( arg1, cuts );
         
-        sprintf( arg1, TString::Format("HT30:MHT:NJets30>>sig4q1400__b%d",b).Data()) ;
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1qq1400.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4q1400__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1qq1400.Draw( arg1, cuts );
-        sprintf( arg1, TString::Format("HT30:MHT:NJets30>>sig4q1000__b%d",b).Data()) ;
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1qq1000.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4q1000__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1qq1000.Draw( arg1, cuts );
         
-        sprintf( arg1, TString::Format("HT30:MHT:NJets30>>sig4b1500__b%d",b).Data()) ;
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1bb1500.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4b1500__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1bb1500.Draw( arg1, cuts );
-        sprintf( arg1, TString::Format("HT30:MHT:NJets30>>sig4b1000__b%d",b).Data()) ;
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1bb1000.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4b1000__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1bb1000.Draw( arg1, cuts );
         
-        sprintf( arg1, TString::Format("HT30:MHT:NJets30>>qcd__b%d",b).Data()) ;
+        
+        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4t1500Raw__b%d",b).Data()) ;
+        t1tt1500.Draw( arg1, cutsUW );
+        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4t1200Raw__b%d",b).Data()) ;
+        t1tt1200.Draw( arg1, cutsUW );
+        
+        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4q1400Raw__b%d",b).Data()) ;
+        t1qq1400.Draw( arg1, cutsUW );
+        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4q1000Raw__b%d",b).Data()) ;
+        t1qq1000.Draw( arg1, cutsUW );
+        
+        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4b1500Raw__b%d",b).Data()) ;
+        t1bb1500.Draw( arg1, cutsUW );
+        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4b1000Raw__b%d",b).Data()) ;
+        t1bb1000.Draw( arg1, cutsUW );
+        
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)QCDCH.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>qcd__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
         QCDCH.Draw( arg1, cuts ) ;
-        sprintf( arg1, TString::Format("HT30:MHT:NJets30>>tt__b%d",b).Data()) ;
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)tt.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>tt__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
         tt.Draw( arg1, cuts ) ;
-        sprintf( arg1, TString::Format("HT30:MHT:NJets30>>WJ__b%d",b).Data()) ;
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)WJets.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>WJ__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
         WJets.Draw( arg1, cuts );
-        sprintf( arg1, TString::Format("HT30:MHT:NJets30>>ZI__b%d",b).Data()) ;
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)Zinv.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>ZI__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
         Zinv.Draw( arg1, cuts ) ;
-    
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)GJets.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>GJ__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
+        GJets.Draw( arg1, cuts ) ;
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)DY.GetEntries()) );
+        sprintf( arg1, TString::Format("%s:%s:%s>>DY__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
+        DY.Draw( arg1, cuts ) ;
+
         sig4t1500_[b]->Write();
         sig4t1200_[b]->Write();
-        
         sig4q1000_[b]->Write();
         sig4q1400_[b]->Write();
-        
         sig4b1500_[b]->Write();
         sig4b1000_[b]->Write();
+    
+        sig4t1500Raw_[b]->Write();
+        sig4t1200Raw_[b]->Write();
+        sig4q1000Raw_[b]->Write();
+        sig4q1400Raw_[b]->Write();
+        sig4b1500Raw_[b]->Write();
+        sig4b1000Raw_[b]->Write();
         
         qcd_[b]->Write();
         WJ_[b]->Write();
         tt_[b]->Write();
         ZI_[b]->Write();
+        GJ_[b]->Write();
+        DY_[b]->Write();
+
     }
+    f0->Close();
+
 }
 //THIS DEFINES THE BINNING and PRODUCES THE LATEX TABLE
-void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
+void fillEventYields(float lumi=4.0){
+
     TH3F*sig4t1200_[4];
     TH3F*sig4t1500_[4];
     
@@ -189,13 +285,33 @@ void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
     TH3F*sig4q1400_[4];
     TH3F*sig4q1000_[4];
     
+    TH3F*sig4t1200raw_[4];
+    TH3F*sig4t1500raw_[4];
+    
+    TH3F*sig4b1500raw_[4];
+    TH3F*sig4b1000raw_[4];
+    TH3F*sig4q1400raw_[4];
+    TH3F*sig4q1000raw_[4];
+    
     TH3F*qcd_[4];
     TH3F*tt_[4];
     TH3F*WJ_[4];
     TH3F*ZI_[4];
+    //SL
+    TH3F*ttSL_[4];
+    TH3F*WJSL_[4];
+    //0L
+    TH3F*qcdLDP_[4];
+    //GJets
+    TH3F*ziGJet_[4];
+
     TFile*f0=new TFile(TString::Format("Bins4DBINS_Lumi%2.2ffb.root", lumi).Data());
+    TFile*f1=new TFile(TString::Format("Bins4DSL_Lumi%2.2ffb.root", lumi).Data());
+    TFile*f2=new TFile(TString::Format("Bins4DLDP_Lumi%2.2ffb.root", lumi).Data());
+    TFile*f3=new TFile(TString::Format("Bins4DGJet_Lumi%2.2ffb.root", lumi).Data());
+
     for(int b=0; b<4; ++b){
-        
+
         sig4t1500_[b]=(TH3F*)f0->Get(TString::Format("sig4t1500__b%d",b).Data());
         sig4t1200_[b]=(TH3F*)f0->Get(TString::Format("sig4t1200__b%d",b).Data());
         
@@ -205,16 +321,57 @@ void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
         sig4q1400_[b]=(TH3F*)f0->Get(TString::Format("sig4q1400__b%d",b).Data());
         sig4q1000_[b]=(TH3F*)f0->Get(TString::Format("sig4q1000__b%d",b).Data());
         
+        
+        sig4t1500raw_[b]=(TH3F*)f0->Get(TString::Format("sig4t1500Raw__b%d",b).Data());
+        sig4t1200raw_[b]=(TH3F*)f0->Get(TString::Format("sig4t1200Raw__b%d",b).Data());
+        
+        sig4b1500raw_[b]=(TH3F*)f0->Get(TString::Format("sig4b1500Raw__b%d",b).Data());
+        sig4b1000raw_[b]=(TH3F*)f0->Get(TString::Format("sig4b1000Raw__b%d",b).Data());
+        
+        sig4q1400raw_[b]=(TH3F*)f0->Get(TString::Format("sig4q1400Raw__b%d",b).Data());
+        sig4q1000raw_[b]=(TH3F*)f0->Get(TString::Format("sig4q1000Raw__b%d",b).Data());
+        
         qcd_[b]=(TH3F*)f0->Get(TString::Format("qcd__b%d",b).Data());
         tt_[b]=(TH3F*)f0->Get(TString::Format("tt__b%d",b).Data());
         WJ_[b]=(TH3F*)f0->Get(TString::Format("WJ__b%d",b).Data());
         ZI_[b]=(TH3F*)f0->Get(TString::Format("ZI__b%d",b).Data());
+        ttSL_[b]=(TH3F*)f1->Get(TString::Format("tt__b%d",b).Data());
+        WJSL_[b]=(TH3F*)f1->Get(TString::Format("WJ__b%d",b).Data());
+
+        qcdLDP_[b]=(TH3F*)f2->Get(TString::Format("qcd__b%d",b).Data());
+        ziGJet_[b]=(TH3F*)f3->Get(TString::Format("GJ__b%d",b).Data());
     }
     
     //signal strength
     FILE* fp = fopen(  "OutputTable.tex", "w" ) ;
+    TFile*fS=new TFile("simple-shapes-TH1.root", "RECREATE");
+
+    TH1F*sig=new TH1F("sig", "", 72, 0,71);
+
+//    TH1F*sig_SigmaUp=new TH1F("sig_SigmaUp", "", 72, 0,71);
+//    TH1F*sig_SigmaDown=new TH1F("sig_SigmaUp", "", 72, 0,71);
+    TH1F*data_obs=new TH1F("data_obs", "", 72, 0,71);
+
     
     
+    TH1F*data_obs0L=new TH1F("data_obs0L", "", 72, 0,71);
+    TH1F*data_obs1L=new TH1F("data_obs1L", "", 72, 0,71);
+    
+    TH1F*QCD=new TH1F("QCD", "", 72, 0,71);
+    TH1F*WJttbar=new TH1F("WJttbar", "", 72, 0,71);
+    TH1F*Zinv=new TH1F("Zinv", "", 72, 0,71);
+    
+    TH1F*sig_0L=new TH1F("sig_0L", "", 72, 0,71);//never fill this
+    TH1F*QCD_0L=new TH1F("QCD_0L", "", 72, 0,71);
+    TH1F*WJttbar_0L=new TH1F("WJttbar_0L", "", 72, 0,71);//never fill this
+    TH1F*Zinv_0L=new TH1F("Zinv_0L", "", 72, 0,71);//never fill this
+    
+    TH1F*sig_1L=new TH1F("sig_1L", "", 72, 0,71);//never fill this
+    TH1F*QCD_1L=new TH1F("QCD_1L", "", 72, 0,71);//never fill this
+    TH1F*WJttbar_1L=new TH1F("WJttbar_1L", "", 72, 0,71);
+    TH1F*Zinv_1L=new TH1F("Zinv_1L", "", 72, 0,71);//never fill this
+    
+
     fprintf(fp, "\\documentclass[10pt,a4paper]{article}\n");
     fprintf(fp, "\\usepackage[utf8]{inputenc}\n");
     fprintf(fp, "\\usepackage{amsmath}\n");
@@ -244,7 +401,7 @@ void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
         for(int nb=0; nb<=3; nb++){
             for ( int mhti=1; mhti<=3; mhti++ ){
                 for ( int hti=1; hti<=3; hti++ ) {
-                    
+
                     if(hti<2 && mhti==3)continue;
                     
                     if(mhti==1){
@@ -253,15 +410,25 @@ void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
                         sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, hti );
                         sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, hti );
                         sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti );
-                        
                         sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti );
                         sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti );
+                        
+                        sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti );
                         
                         qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti );
                         zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti );
                         wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti );
                         ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti );
                         //for now observed data is set to total bkg yield
+                        SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti);
+                        LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti);
+                       // std::cout<<"Ibin "<<ibin<<"nj "<<ij<<" nb "<<nb<<" hti "<< hti<<" mhti "<<mhti<<std::endl;
+                        GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, hti);
                         ++ibin;
                         
                     }
@@ -277,11 +444,22 @@ void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
                         sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500_[nb]->GetBinContent( ij, mhti, 3 );
                         sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000_[nb]->GetBinContent( ij, mhti, 3 );
                         
+                        sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000raw_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500raw_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000raw_[nb]->GetBinContent( ij, mhti, 3 );
+                        
+                        
                         qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, 2 )+qcd_[nb]->GetBinContent( ij, mhti, 3 );
                         zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, 2 )+ZI_[nb]->GetBinContent( ij, mhti, 3 );
                         wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, 2 )+WJ_[nb]->GetBinContent( ij, mhti, 3 );
                         ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, 2)+tt_[nb]->GetBinContent( ij, mhti, 3);
-                        
+                        SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, 2)+WJSL_[nb]->GetBinContent(ij, mhti, 3)+ttSL_[nb]->GetBinContent(ij, mhti, 2)+ttSL_[nb]->GetBinContent(ij, mhti, 3);
+                        LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, 2)+qcdLDP_[nb]->GetBinContent(ij, mhti, 3);
+                        GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, 2)+ziGJet_[nb]->GetBinContent(ij, mhti, 3);;                        
+                                //    std::cout<<"Ibin "<<ibin<<"nj "<<ij<<" nb "<<nb<<" hti "<< hti<<" mhti "<<mhti<<std::endl;
                         ++ibin;
                     }
                     
@@ -295,11 +473,22 @@ void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
                         sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000_[nb]->GetBinContent( ij, mhti, 2 );
                         sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500_[nb]->GetBinContent( ij, mhti, 2 );
                         sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000_[nb]->GetBinContent( ij, mhti, 2 );
+                        
+                        sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000raw_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500raw_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000raw_[nb]->GetBinContent( ij, mhti, 2 );
+                        
                         qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, 1 )+qcd_[nb]->GetBinContent( ij, mhti, 2 );
                         zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, 1 )+ZI_[nb]->GetBinContent( ij, mhti, 2 );
                         wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, 1 )+WJ_[nb]->GetBinContent( ij, mhti, 2 );
                         ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, 1)+tt_[nb]->GetBinContent( ij, mhti, 2);
-                        
+                        SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, 1)+WJSL_[nb]->GetBinContent(ij, mhti, 2)+ttSL_[nb]->GetBinContent(ij, mhti, 1)+ttSL_[nb]->GetBinContent(ij, mhti, 2);
+                        LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, 1)+qcdLDP_[nb]->GetBinContent(ij, mhti, 2);
+                        GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, 1)+ziGJet_[nb]->GetBinContent(ij, mhti, 2);
+
                         if(hti==3){
                             boxcount=5;
                             sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, hti );
@@ -308,15 +497,32 @@ void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
                             sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti );
                             sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti );
                             sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti );
+                            
+                            sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                            
                             qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti );
                             zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti );
                             wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti );
                             ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti );
+                            SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti);
+                            LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti);
+                            GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, hti);
                         }
+                        //std::cout<<"Ibin "<<ibin<<"nj "<<ij<<" nb "<<nb<<" hti "<< hti<<" mhti "<<mhti<<std::endl;
+
                         ++ibin;
                     }
-                    fprintf(fp, "HT-MHTBin%d jetbin%d btag%d & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f  & %4.2f & %4.2f  \\\\ \n", boxcount,ij, nb,qcd[ibin-1], ttbar[ibin-1],zi[ibin-1],wj[ibin-1],sig4t1500[ibin-1],sig4t1200[ibin-1],sig4q1400[ibin-1],sig4q1000[ibin-1],sig4b1500[ibin-1],sig4b1000[ibin-1] );
-                    std::cout<<"Ibin "<<ibin<<std::endl;
+                    
+                    if(nb>=2)fprintf(fp, "HT-MHTBin%d jetbin%d btag%d & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f  & %4.2f & %4.2f  \\\\ \n", boxcount,ij, nb,qcd[ibin-1], ttbar[ibin-1],zi[ibin-1],wj[ibin-1],sig4t1500[ibin-1],sig4t1200[ibin-1],sig4q1400[ibin-1],sig4q1000[ibin-1],sig4b1500[ibin-1],sig4b1000[ibin-1] );
+                    Bbins[ibin-1]=nb;
+                    njbins[ibin-1]=ij;
+                    mbins[ibin-1]=boxcount;
+
                 }
             }
         }
@@ -327,114 +533,343 @@ void fillEventYields(TString Options="Signal", float mu=1.0, float lumi=4.0){
     fprintf(fp,"\\end{table}\n");
     fprintf(fp,"\\end{document}\n"); //made Latex File with Yields
     f0->Close();
+    fclose(fp);
+    
+    TDirectory* bin1=fS->mkdir("bin1");
+    bin1->cd();
+    sig->Write();
+    QCD->Write();
+    WJttbar->Write();
+    Zinv->Write();
+    data_obs->Write();
+    TDirectory* bin2=fS->mkdir("bin2");
+    bin2->cd();
+    
+    sig_0L->SetName("sig");
+    QCD_0L->SetName("QCD");
+    WJttbar_0L->SetName("WJttbar");
+    Zinv_0L->SetName("Zinv");
+    data_obs0L->SetName("data_obs");
+
+    sig_0L->Write();
+    QCD_0L->Write();
+    WJttbar_0L->Write();
+    Zinv_0L->Write();
+    data_obs0L->Write();
+    
+    TDirectory* bin3=fS->mkdir("bin3");
+    bin3->cd();
+    sig_1L->SetName("sig");
+    QCD_1L->SetName("QCD");
+    WJttbar_1L->SetName("WJttbar");
+    Zinv_1L->SetName("Zinv");
+    data_obs1L->SetName("data_obs");
+    
+    sig_1L->Write();
+    QCD_1L->Write();
+    WJttbar_1L->Write();
+    Zinv_1L->Write();
+    data_obs1L->Write();
+    
+    f0->Close();
+    f1->Close();
+    f2->Close();
+    f3->Close();
+    fS->Close();
+    // fclose(fp);
+
 }
 
 //THis prints the data cards with specified Uncertainties (entered by hand for now)
 void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TString Options="", int bin=0){
+    
     float sig[totalbins];
+    float sigRaw[totalbins];
     float obs[totalbins];
-    fillEventYields("Signal", mu, lumi);
+    fillEventYields(lumi);
     
     for(int i=0; i<totalbins; ++i){
-        if(Options=="T1tttt" && mGlu==1500)sig[i]=sig4t1500[i];
-        if(Options=="T1tttt" && mGlu==1200)sig[i]=sig4t1200[i];
-        if(Options=="T1qqqq" && mGlu==1400)sig[i]=sig4q1400[i];
-        if(Options=="T1qqqq"  && mGlu==1000)sig[i]=sig4q1000[i];
-        if(Options=="T1bbbb" && mGlu==1500)sig[i]=sig4b1500[i];
-        if(Options=="T1bbbb" && mGlu==1000)sig[i]=sig4b1000[i];
-        obs[i]=(qcd[i]+ zi[i]+wj[i]+ttbar[i] + (mu*sig[i]));
+        if(Options=="T1tttt" && mGlu==1500){sig[i]=sig4t1500[i]; sigRaw[i]=sig4t1500raw[i]; }
+        if(Options=="T1tttt" && mGlu==1200){sig[i]=sig4t1200[i];sigRaw[i]=sig4t1200raw[i]; }
+        if(Options=="T1qqqq" && mGlu==1400){sig[i]=sig4q1400[i];sigRaw[i]=sig4q1400raw[i]; }
+        if(Options=="T1qqqq"  && mGlu==1000){sig[i]=sig4q1000[i];sigRaw[i]=sig4q1000raw[i]; }
+        if(Options=="T1bbbb" && mGlu==1500){sig[i]=sig4b1500[i];sigRaw[i]=sig4b1500raw[i]; }
+        if(Options=="T1bbbb" && mGlu==1000){sig[i]=sig4b1000[i];sigRaw[i]=sig4b1000raw[i]; }
+
+        obs[i]=(qcd[i]+ zi[i]+wj[i]+ttbar[i] + (mu*sig[i])); 
     }
+
+    //std::cout << "bin = " << bin << " " << qcd[bin] << " " << zi[bin] << " " << wj[bin] << " " << ttbar[bin] << " " << sig[bin] << " " << LDP[bin] << " " << SL[bin] << " " << GJet[bin] << std::endl;
+
     float qcdscale=10.0;
     float ttbarScale=1.0;
-
-    TString str=(TString::Format("LatestCards/SensStudyLumi%2.2f_Bin%d_M%d_m%d_%s.dat",lumi,bin, mGlu, MLSP,Options.Data())).Data();
-    // const char outputfilename[100]=str.Data();
+    float gjetScale=1.0; //???
     
+    // --------------------------------
+    // some code for the gamma + jets estimation
+    int ibin=0;
+    int nbForCurrentBin = -99;
+    for ( int ij=1; ij<=3; ij++ ) {
+        for(int nb=0; nb<=3; nb++){
+            for ( int mhti=1; mhti<=3; mhti++ ){
+                for ( int hti=1; hti<=3; hti++ ) {
+                    if (bin == ibin) nbForCurrentBin = nb;
+                    ibin++;
+                    // std::cout << ibin << " " << ij << " " << nb << " " << mhti << " " << hti << std::endl;
+                }
+            }
+        }
+    }
+
+    // std::cout << "nbForCurrentBin = " << nbForCurrentBin << std::endl;
+
+    TString str=(TString::Format("./DataCards/SensStudyLumi%2.2f_Bin%d_M%d_m%d_%s.dat",lumi,bin, mGlu, MLSP,Options.Data())).Data();
+    // const char outputfilename[100]=str.Data();
+
     FILE* fp = fopen(  str.Data(), "w" ) ;
     
-    fprintf(fp, "imax %d number of channels\n", 3);//signal region PLUS 3 control bins
+    int numberOfChannels = 3;
+    if (nbForCurrentBin == 0) numberOfChannels = 4;
+    fprintf(fp, "imax %d number of channels\n", numberOfChannels);//signal region PLUS 3 control bins
     fprintf(fp, "jmax %d number of backgrounds (QCD, Zinv, WJttbar)\n",3);//4 bkg processes
     fprintf(fp, "kmax * nuissance\n");
     fprintf(fp, "------------\n");
-    fprintf(fp, "bin Bin%d BinContQ%d BinContW%d ", bin,bin, bin);
+    if (nbForCurrentBin == 0) fprintf(fp, "bin Bin%d BinContLDP%d BinContSL%d BinContPh%d ", bin,bin,bin,bin);
+    if (nbForCurrentBin > 0) fprintf(fp, "bin Bin%d BinContLDP%d BinContSL%d ", bin,bin,bin);
     //4 bins
-    if(qcd[bin]>0.0000000000000000001 && wj[bin]+ttbar[bin]>0.0000000001)fprintf(fp, "\n observation %g %g %g ", obs[bin], qcdscale*qcd[bin],ttbarScale*(wj[bin]+ttbar[bin]));
-    if(qcd[bin]<0.0000000000000000001 && wj[bin]+ttbar[bin]>0.0000000001) fprintf(fp, "\n observation %g %g %g ", obs[bin], qcdscale,ttbarScale*(wj[bin]+ttbar[bin]));
-        if(qcd[bin]>0.0000000000000000001 && wj[bin]+ttbar[bin]>0.0000000001) fprintf(fp, "\n observation %g %g %g ", obs[bin], qcd[bin],ttbarScale);
-    //4 Expected Count bins (MC)
+    if (nbForCurrentBin == 0) fprintf(fp, "\nobservation %g %g %g %g", obs[bin],LDP[bin],SL[bin],GJet[bin]);
+    if (nbForCurrentBin > 0) fprintf(fp, "\nobservation %g %g %g", obs[bin],LDP[bin],SL[bin]);
+   //4 Expected Count bins (MC)
     fprintf(fp, "\nbin Bin%d  Bin%d  Bin%d  Bin%d ", bin,bin, bin, bin);
-    fprintf(fp, "BinContQ%d  BinContQ%d  BinContQ%d  BinContQ%d ",bin, bin,bin, bin);
-    fprintf(fp, "BinContW%d  BinContW%d  BinContW%d  BinContW%d ", bin,bin, bin, bin);
+    fprintf(fp, "BinContLDP%d  BinContLDP%d  BinContLDP%d  BinContLDP%d ",bin, bin,bin, bin);
+    fprintf(fp, "BinContSL%d  BinContSL%d  BinContSL%d  BinContSL%d ", bin,bin, bin, bin);
+    if (nbForCurrentBin == 0) fprintf(fp, "BinContPh%d  BinContPh%d  BinContPh%d  BinContPh%d ", bin,bin, bin, bin);
     //fprintf(fp, "BinContT%d  BinContT%d  BinContT%d  BinContT%d  BinContT%d ",bin, bin,bin, bin, bin);
     
     fprintf(fp, "\nprocess sig QCD Zinv WJttbar ");
     fprintf(fp, "sig QCD Zinv WJttbar  ");
     fprintf(fp, "sig QCD Zinv WJttbar  ");
+    if (nbForCurrentBin == 0) fprintf(fp, "sig QCD Zinv WJttbar  ");
     
     fprintf(fp, "\nprocess %d %d %d %d ", 0, 1,2,3);
     fprintf(fp, "%d %d %d %d ",0, 1,2,3);
     fprintf(fp, "%d %d %d %d ",0, 1,2,3);
+    if (nbForCurrentBin == 0) fprintf(fp, "%d %d %d %d ",0, 1,2,3);
     
     //NOW THIS IS MY EXPECTED SIGNAL REGION!
-    //    fprintf(fp, "\nrate %g %g %g %g %g  ", sig[bin], qcd[bin],zi[bin],wj[bin],ttbar[bin]);
-    
     fprintf(fp, "\nrate %g ", sig[bin]);
     if(qcd[bin]>0.0000000000000000001)fprintf(fp, " %g ", qcd[bin]);
-    else fprintf(fp, " %g ",1.);
+    else fprintf(fp, " %g ",0.001);
     
     fprintf(fp, " %g ", zi[bin]);
-    
     if(wj[bin]+ttbar[bin]>0.0000000000000000001)fprintf(fp, " %g ",wj[bin]+ttbar[bin]);
-    else fprintf(fp, " %g ",1.);
-    
-   // if(ttbar[bin]>0.0000000000000000001)fprintf(fp, " %g ",ttbar[bin]);
-   // else fprintf(fp, " %g ",1.);
-    
+    else fprintf(fp, " %g ",0.001);
     
     //QCD Region 1
     fprintf(fp, " %g ",0.);
-    if(qcd[bin]>0.0000000000000000001)fprintf(fp, " %g ",qcdscale*qcd[bin]);
-    else fprintf(fp, " %g ",qcdscale*1.);
+    if(LDP[bin]>0.0000000000000000001)fprintf(fp, " %g ",LDP[bin]);
+    else fprintf(fp, " %g ",qcdscale*0.001);
     //fprintf(fp, " %g ",10.);
     fprintf(fp, " %g %g ",0., 0.);
     
     //WJ/TTbar Region 1
     fprintf(fp, " %g %g %g",0.,0.,0.0);
-    if(wj[bin]+ttbar[bin]>0.0000000000000000001)fprintf(fp, " %g ",ttbar[bin]+wj[bin]);
-    else fprintf(fp, " %g ",1.);
-    fprintf(fp, "\n");
-   
+    if(SL[bin]>0.0000000000000000001)fprintf(fp, " %g ",SL[bin]);
+    else fprintf(fp, " %g ", ttbarScale*0.001);
+    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+
+    //Gamma+jets Region 1
+    if (nbForCurrentBin == 0){
+        fprintf(fp, " %g %g",0.,0.);
+        if(GJet[bin]>0.0000000000000000001)fprintf(fp, " %g ",GJet[bin]);
+        else fprintf(fp, " %g ", gjetScale*0.001);
+        fprintf(fp, "%g \n", 0.);
+    }
+
+    ////////////////////////
+    //// now systematics
+    ////////////////////////
+    fprintf(fp, "------------\n");
 
     float logUErr=100.;
-   // while(qcdscale*qcd[bin]/logUErr>0.1)logUErr=logUErr+(1*logUErr);
-    fprintf(fp, "rateBqcd%d lnU - %8.1f - - ",bin, logUErr );
-    fprintf(fp, " - %8.1f - - ",logUErr);
-    fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - \n");
-    
-    
-    fprintf(fp, "LogBqcd%d lnN - %g - -  ",bin, 1.3 );
-    fprintf(fp, " - - - -  ");
-    fprintf(fp, " - - - -  ");
-    fprintf(fp, " - - - -  \n");
-    
-   // while(wj[bin]/logUErr>0.1)logUErr=logUErr+(1.0*logUErr);
-    fprintf(fp, "rateBW%d lnU - - - %8.1f  ",bin, logUErr );
-    fprintf(fp, " - - - -  ");
-    fprintf(fp, " - - - %8.1f  ",logUErr);
-    fprintf(fp, " - - - -  \n");
-    
+    if(LDP[bin]>0.0000000000000000001){
+        fprintf(fp, "rateBqcd%d lnU - %8.1f - - ",bin, logUErr );
+        fprintf(fp, " - %8.1f - - ",logUErr);
+        if (nbForCurrentBin == 0) fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -\n");
+    }
+    else {
+       logUErr=10000;
+       fprintf(fp, "rateBqcd%d lnU - %8.1f - - ",bin, logUErr );
+       fprintf(fp, " - %8.1f - - ",logUErr);
+       if (nbForCurrentBin == 0) fprintf(fp, " - - - -  ");
+       fprintf(fp, " - - - -\n");
+
+    }
+
+   fprintf(fp, "LogBqcd%d lnN - %g - -  ",bin, 1.3 );
+   fprintf(fp, " - - - -  ");
+   if (nbForCurrentBin == 0) fprintf(fp, " - - - -  ");
+   fprintf(fp, " - - - -  \n");
+
+    if(SL[bin]>0.0000000000000000001){
+        logUErr=100;
+        fprintf(fp, "rateBW%d lnU - - - %8.1f  ",bin, logUErr );
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - %8.1f  ",logUErr);
+        if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+        if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    }
+    else{
+        logUErr=10000;
+        fprintf(fp, "rateBW%d lnU - - - %8.1f  ",bin, logUErr );
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - %8.1f  ",logUErr);  
+        if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+        if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    }
+
+
+    if (nbForCurrentBin == 0){
+        logUErr=100;
+        fprintf(fp, "rateBPh%d lnU - - %8.1f -  ",bin, logUErr );
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - %8.1f - \n",logUErr);
+        fprintf(fp, "rateB0BTo1B%d lnU - - %8.1f -  ",bin+9, logUErr );
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  \n");
+        fprintf(fp, "rateB0BTo2B%d lnU - - %8.1f -  ",bin+18, logUErr );
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  \n");
+        fprintf(fp, "rateB0BTo3B%d lnU - - %8.1f -  ",bin+27, logUErr );
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  \n");
+        fprintf(fp, "LogBPh lnN - - %g -  ", 1.3 );
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  \n");
+    }
+    else{
+        fprintf(fp, "rateB0BTo%1iB%d lnU - - %8.1f -  ",nbForCurrentBin,bin, logUErr );
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  \n");
+        fprintf(fp, "LogB0BTo%iB lnN - - %g -  ",nbForCurrentBin, 1.3 );
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  \n");
+    }
+
+    //don't need this anymore (covered by Non Closure and Lep Eff)
+    /*
     fprintf(fp, "LogBW%d lnN - - - %g  ",bin, 1.3 );
     fprintf(fp, " - - - -  ");
-    fprintf(fp, " - - - -  ");
     fprintf(fp, " - - - -  \n");
-    
+    */
 
     
     fprintf(fp, "LogBZ%d lnN - - %g - ",bin, 1.3 );
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - \n");
+    fprintf(fp, " - - - - ");
+    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    
+    //apply b-tag uncertainty
+    
+    float btagerrUP=1.0;
+    if(Bbins[bin]==0)btagerrUP=0.9;
+    if(Bbins[bin]==3)btagerrUP=1.1;
+    fprintf(fp, "BTagEffSigmaUp lnN %g - - - ", btagerrUP );
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+    if (nbForCurrentBin > 0) fprintf(fp, "\n");
 
+    float btagerrDown=1.0;
+    if(Bbins[bin]==0)btagerrDown=1.1;
+    if(Bbins[bin]==3)btagerrDown=0.9;
+    
+    fprintf(fp, "BTagEffSigmaDown lnN %g - - - ",btagerrDown );
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    
+    fprintf(fp, "lumi lnN %g - - - ", 1.044 );
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    
+    fprintf(fp, "PDFUnc lnN %g - - - ", 1.1 );
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    
+    float JEC_UnclECorr=1.0;
+    
+    if(mbins[bin]==1)JEC_UnclECorr=0.95-0.01-0.02;
+    if(mbins[bin]==2)JEC_UnclECorr=0.97-0.01-0.02;
+    if(mbins[bin]==3)JEC_UnclECorr=1.1+0.01+0.02;
+    if(mbins[bin]==4)JEC_UnclECorr=0.96-0.01-0.02;
+    if(mbins[bin]==5)JEC_UnclECorr=1.04+0.01+0.02;
+    if(mbins[bin]==6)JEC_UnclECorr=1.05+0.01+0.02;
+    
+    fprintf(fp, "JEC lnN %g - - - ", JEC_UnclECorr );
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+    if (nbForCurrentBin > 0) fprintf(fp, "\n");    
+    
+    fprintf(fp, "MCstat_%d lnN %g - - - ", bin,1+(sqrt(sigRaw[bin]))/sigRaw[bin]) ;
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+
+    
+    //background systematics
+    //lepton efficiency in MHT/HT plane
+
+    float LepEff=1.0;
+    
+    if(mbins[bin]==1)LepEff=1.05;
+    if(mbins[bin]==2)LepEff=1.07;
+    if(mbins[bin]==3)LepEff=1.10;
+    if(mbins[bin]==4)LepEff=1.07;
+    if(mbins[bin]==5)LepEff=1.1;
+    if(mbins[bin]==6)LepEff=1.1;
+    
+    fprintf(fp, "LepEff lnN - - - %g ", LepEff );
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+
+    float MCClose=1.0;
+    if(njbins[bin]==1)MCClose=1.1;
+    if(njbins[bin]==2)MCClose=1.2;
+    if(njbins[bin]==3)MCClose=1.3;
+
+    fprintf(fp, "MCClose_%d lnN - - - %g ", bin,MCClose) ;
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
+    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    
     
 }
