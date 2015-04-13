@@ -762,6 +762,10 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  \n");
+        fprintf(fp, "LogBPh lnN - - %g -  ", 1.3 );
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - -  \n");        
     }
 
     //don't need this anymore (covered by Non Closure and Lep Eff)

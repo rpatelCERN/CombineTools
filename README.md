@@ -22,7 +22,7 @@
 
 2. Make datacards
 
-> root -l -b -q RunDatacards.C
+> root -l -b -q RunDataCards.C
 
 N.B. Right now the code uses "lheWeight" introduced by Nhan instead of "Weight" branch standard in the TreeMaker
 
