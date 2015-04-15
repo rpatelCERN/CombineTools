@@ -388,12 +388,12 @@ void fillEventYields(float lumi=4.0){
         sig4q1400LDP_[b]=(TH3F*)f2->Get(TString::Format("sig4q1400__b%d",b).Data());
         sig4q1000LDP_[b]=(TH3F*)f2->Get(TString::Format("sig4q1000__b%d",b).Data());
         
-        sig4t1500Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4t1500__b%d",b).Data());
-        sig4t1200Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4t1200__b%d",b).Data());
-        sig4b1500Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4b1500__b%d",b).Data());
-        sig4b1000Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4b1000__b%d",b).Data());
-        sig4q1400Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4q1400__b%d",b).Data());
-        sig4q1000Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4q1000__b%d",b).Data());
+        sig4t1500Pho_[b]=(TH3F*)f3->Get(TString::Format("sig4t1500__b%d",b).Data());
+        sig4t1200Pho_[b]=(TH3F*)f3->Get(TString::Format("sig4t1200__b%d",b).Data());
+        sig4b1500Pho_[b]=(TH3F*)f3->Get(TString::Format("sig4b1500__b%d",b).Data());
+        sig4b1000Pho_[b]=(TH3F*)f3->Get(TString::Format("sig4b1000__b%d",b).Data());
+        sig4q1400Pho_[b]=(TH3F*)f3->Get(TString::Format("sig4q1400__b%d",b).Data());
+        sig4q1000Pho_[b]=(TH3F*)f3->Get(TString::Format("sig4q1000__b%d",b).Data());
         
         sig4t1500raw_[b]=(TH3F*)f0->Get(TString::Format("sig4t1500Raw__b%d",b).Data());
         sig4t1200raw_[b]=(TH3F*)f0->Get(TString::Format("sig4t1200Raw__b%d",b).Data());
