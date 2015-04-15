@@ -43,6 +43,40 @@ float SL[totalbins];
 float LDP[totalbins];
 float GJet[totalbins];
 
+//leakage terms for signal and background contamination in CR bins:
+float QCDSL[totalbins];
+float ZSL[totalbins];
+float sig4t1500SL[totalbins];
+float sig4t1200SL[totalbins];
+float sig4q1400SL[totalbins];
+float sig4q1000SL[totalbins];
+float sig4b1500SL[totalbins];
+float sig4b1000SL[totalbins];
+
+float SLLDP[totalbins];
+float ZLDP[totalbins];
+float sigLDP[totalbins];
+float sigSL[totalbins];
+
+float sig4t1500LDP[totalbins];
+float sig4t1200LDP[totalbins];
+float sig4q1400LDP[totalbins];
+float sig4q1000LDP[totalbins];
+float sig4b1500LDP[totalbins];
+float sig4b1000LDP[totalbins];
+
+float QCDPho[totalbins];
+float SLPho[totalbins];
+float sigPho[totalbins];
+
+float sig4t1500Pho[totalbins];
+float sig4t1200Pho[totalbins];
+float sig4q1400Pho[totalbins];
+float sig4q1000Pho[totalbins];
+float sig4b1500Pho[totalbins];
+float sig4b1000Pho[totalbins];
+
+
 void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
     
     std::cout << "Processing with option = " << Options << std::endl;
@@ -180,7 +214,8 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
         ZI_[b]=new TH3F(TString::Format("ZI__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         GJ_[b]=new TH3F(TString::Format("GJ__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         DY_[b]=new TH3F(TString::Format("DY__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
-
+        
+        
         sprintf( cuts, "(%s && %s )%s", commoncuts,bcutstringRectangular[b],weightstring );
         sprintf( cutsUW, "(%s && %s )", commoncuts,bcutstringRectangular[b] );
 
@@ -285,9 +320,29 @@ void fillEventYields(float lumi=4.0){
     TH3F*sig4q1400_[4];
     TH3F*sig4q1000_[4];
     
+    TH3F*sig4t1200SL_[4];
+    TH3F*sig4t1500SL_[4];
+    TH3F*sig4b1500SL_[4];
+    TH3F*sig4b1000SL_[4];
+    TH3F*sig4q1400SL_[4];
+    TH3F*sig4q1000SL_[4];
+    
+    TH3F*sig4t1200LDP_[4];
+    TH3F*sig4t1500LDP_[4];
+    TH3F*sig4b1500LDP_[4];
+    TH3F*sig4b1000LDP_[4];
+    TH3F*sig4q1400LDP_[4];
+    TH3F*sig4q1000LDP_[4];
+    
+    TH3F*sig4t1200Pho_[4];
+    TH3F*sig4t1500Pho_[4];
+    TH3F*sig4b1500Pho_[4];
+    TH3F*sig4b1000Pho_[4];
+    TH3F*sig4q1400Pho_[4];
+    TH3F*sig4q1000Pho_[4];
+    
     TH3F*sig4t1200raw_[4];
     TH3F*sig4t1500raw_[4];
-    
     TH3F*sig4b1500raw_[4];
     TH3F*sig4b1000raw_[4];
     TH3F*sig4q1400raw_[4];
@@ -300,11 +355,21 @@ void fillEventYields(float lumi=4.0){
     //SL
     TH3F*ttSL_[4];
     TH3F*WJSL_[4];
+    TH3F*zSL_[4];
+    TH3F*QCDSL_[4];
     //0L
     TH3F*qcdLDP_[4];
+    TH3F*ttLDP_[4];
+    TH3F*WJLDP_[4];
+    TH3F*ZLDP_[4];
     //GJets
     TH3F*ziGJet_[4];
-
+    TH3F*sigPho_[4];
+    TH3F*qcdPho_[4];
+    TH3F*ttPho_[4];
+    TH3F*WJPho_[4];
+    
+    
     TFile*f0=new TFile(TString::Format("Bins4DBINS_Lumi%2.2ffb.root", lumi).Data());
     TFile*f1=new TFile(TString::Format("Bins4DSL_Lumi%2.2ffb.root", lumi).Data());
     TFile*f2=new TFile(TString::Format("Bins4DLDP_Lumi%2.2ffb.root", lumi).Data());
@@ -321,6 +386,26 @@ void fillEventYields(float lumi=4.0){
         sig4q1400_[b]=(TH3F*)f0->Get(TString::Format("sig4q1400__b%d",b).Data());
         sig4q1000_[b]=(TH3F*)f0->Get(TString::Format("sig4q1000__b%d",b).Data());
         
+        sig4t1500SL_[b]=(TH3F*)f1->Get(TString::Format("sig4t1500__b%d",b).Data());
+        sig4t1200SL_[b]=(TH3F*)f1->Get(TString::Format("sig4t1200__b%d",b).Data());
+        sig4b1500SL_[b]=(TH3F*)f1->Get(TString::Format("sig4b1500__b%d",b).Data());
+        sig4b1000SL_[b]=(TH3F*)f1->Get(TString::Format("sig4b1000__b%d",b).Data());
+        sig4q1400SL_[b]=(TH3F*)f1->Get(TString::Format("sig4q1400__b%d",b).Data());
+        sig4q1000SL_[b]=(TH3F*)f1->Get(TString::Format("sig4q1000__b%d",b).Data());
+        
+        sig4t1500LDP_[b]=(TH3F*)f2->Get(TString::Format("sig4t1500__b%d",b).Data());
+        sig4t1200LDP_[b]=(TH3F*)f2->Get(TString::Format("sig4t1200__b%d",b).Data());
+        sig4b1500LDP_[b]=(TH3F*)f2->Get(TString::Format("sig4b1500__b%d",b).Data());
+        sig4b1000LDP_[b]=(TH3F*)f2->Get(TString::Format("sig4b1000__b%d",b).Data());
+        sig4q1400LDP_[b]=(TH3F*)f2->Get(TString::Format("sig4q1400__b%d",b).Data());
+        sig4q1000LDP_[b]=(TH3F*)f2->Get(TString::Format("sig4q1000__b%d",b).Data());
+        
+        sig4t1500Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4t1500__b%d",b).Data());
+        sig4t1200Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4t1200__b%d",b).Data());
+        sig4b1500Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4b1500__b%d",b).Data());
+        sig4b1000Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4b1000__b%d",b).Data());
+        sig4q1400Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4q1400__b%d",b).Data());
+        sig4q1000Pho_[b]=(TH3F*)f2->Get(TString::Format("sig4q1000__b%d",b).Data());
         
         sig4t1500raw_[b]=(TH3F*)f0->Get(TString::Format("sig4t1500Raw__b%d",b).Data());
         sig4t1200raw_[b]=(TH3F*)f0->Get(TString::Format("sig4t1200Raw__b%d",b).Data());
@@ -335,21 +420,29 @@ void fillEventYields(float lumi=4.0){
         tt_[b]=(TH3F*)f0->Get(TString::Format("tt__b%d",b).Data());
         WJ_[b]=(TH3F*)f0->Get(TString::Format("WJ__b%d",b).Data());
         ZI_[b]=(TH3F*)f0->Get(TString::Format("ZI__b%d",b).Data());
+        
         ttSL_[b]=(TH3F*)f1->Get(TString::Format("tt__b%d",b).Data());
         WJSL_[b]=(TH3F*)f1->Get(TString::Format("WJ__b%d",b).Data());
-
+        zSL_[b]=(TH3F*)f1->Get(TString::Format("ZI__b%d",b).Data());
+        QCDSL_[b]=(TH3F*)f1->Get(TString::Format("qcd__b%d",b).Data());
+        
         qcdLDP_[b]=(TH3F*)f2->Get(TString::Format("qcd__b%d",b).Data());
+        ttLDP_[b]=(TH3F*)f2->Get(TString::Format("tt__b%d",b).Data());
+        WJLDP_[b]=(TH3F*)f2->Get(TString::Format("WJ__b%d",b).Data());
+        ZLDP_[b]=(TH3F*)f2->Get(TString::Format("ZI__b%d",b).Data());
+        
         ziGJet_[b]=(TH3F*)f3->Get(TString::Format("GJ__b%d",b).Data());
+        qcdPho_[b]=(TH3F*)f3->Get(TString::Format("qcd__b%d",b).Data());
+        ttPho_[b]=(TH3F*)f3->Get(TString::Format("tt__b%d",b).Data());
+        WJPho_[b]=(TH3F*)f3->Get(TString::Format("WJ__b%d",b).Data());
+        
     }
     
     //signal strength
     FILE* fp = fopen(  "OutputTable.tex", "w" ) ;
-    TFile*fS=new TFile("simple-shapes-TH1.root", "RECREATE");
 
     TH1F*sig=new TH1F("sig", "", 72, 0,71);
 
-//    TH1F*sig_SigmaUp=new TH1F("sig_SigmaUp", "", 72, 0,71);
-//    TH1F*sig_SigmaDown=new TH1F("sig_SigmaUp", "", 72, 0,71);
     TH1F*data_obs=new TH1F("data_obs", "", 72, 0,71);
 
     
@@ -420,15 +513,45 @@ void fillEventYields(float lumi=4.0){
                         sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti );
                         sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti );
                         
+                        sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                        
+                        sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                        
+                        sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                        sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                        
                         qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti );
                         zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti );
                         wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti );
                         ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti );
-                        //for now observed data is set to total bkg yield
                         SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti);
+                        QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, hti);
+                        ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, hti);
+
+                        
                         LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti);
-                       // std::cout<<"Ibin "<<ibin<<"nj "<<ij<<" nb "<<nb<<" hti "<< hti<<" mhti "<<mhti<<std::endl;
+                        SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, hti)+ttLDP_[nb]->GetBinContent(ij, mhti, hti);
+                        ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, hti);
+                        
                         GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, hti);
+                        QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, hti);
+                        SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, hti)+ttPho_[nb]->GetBinContent(ij, mhti, hti);
+                        
+                        
                         ++ibin;
                         
                     }
@@ -444,6 +567,27 @@ void fillEventYields(float lumi=4.0){
                         sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500_[nb]->GetBinContent( ij, mhti, 3 );
                         sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000_[nb]->GetBinContent( ij, mhti, 3 );
                         
+                        sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500SL_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200SL_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400SL_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000SL_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500SL_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000SL_[nb]->GetBinContent( ij, mhti, 3 );
+                        
+                        sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 3 );
+
+                        sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                        sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                        
                         sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, 3 );
                         sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, 3 );
                         sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, 3 );
@@ -452,14 +596,25 @@ void fillEventYields(float lumi=4.0){
                         sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000raw_[nb]->GetBinContent( ij, mhti, 3 );
                         
                         
+                        
                         qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, 2 )+qcd_[nb]->GetBinContent( ij, mhti, 3 );
                         zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, 2 )+ZI_[nb]->GetBinContent( ij, mhti, 3 );
                         wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, 2 )+WJ_[nb]->GetBinContent( ij, mhti, 3 );
                         ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, 2)+tt_[nb]->GetBinContent( ij, mhti, 3);
                         SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, 2)+WJSL_[nb]->GetBinContent(ij, mhti, 3)+ttSL_[nb]->GetBinContent(ij, mhti, 2)+ttSL_[nb]->GetBinContent(ij, mhti, 3);
+                        QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, 2)+QCDSL_[nb]->GetBinContent(ij, mhti, 3);
+                        ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, 2)+zSL_[nb]->GetBinContent(ij, mhti, 3);
+
+                        
                         LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, 2)+qcdLDP_[nb]->GetBinContent(ij, mhti, 3);
-                        GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, 2)+ziGJet_[nb]->GetBinContent(ij, mhti, 3);;                        
-                                //    std::cout<<"Ibin "<<ibin<<"nj "<<ij<<" nb "<<nb<<" hti "<< hti<<" mhti "<<mhti<<std::endl;
+                        ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, 2)+ZLDP_[nb]->GetBinContent(ij, mhti, 3);
+                        SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, 2)+WJLDP_[nb]->GetBinContent(ij, mhti, 3)+ttLDP_[nb]->GetBinContent(ij, mhti, 2)+ttLDP_[nb]->GetBinContent(ij, mhti, 3);
+                        
+                        GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, 2)+ziGJet_[nb]->GetBinContent(ij, mhti, 3);
+                        
+                        QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, 2)+qcdPho_[nb]->GetBinContent(ij, mhti, 3);
+                        SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, 2)+WJPho_[nb]->GetBinContent(ij, mhti, 3)+ttPho_[nb]->GetBinContent(ij, mhti, 2)+ttPho_[nb]->GetBinContent(ij, mhti, 3);
+                        
                         ++ibin;
                     }
                     
@@ -474,6 +629,27 @@ void fillEventYields(float lumi=4.0){
                         sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500_[nb]->GetBinContent( ij, mhti, 2 );
                         sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000_[nb]->GetBinContent( ij, mhti, 2 );
                         
+                        sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500SL_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200SL_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400SL_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000SL_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500SL_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000SL_[nb]->GetBinContent( ij, mhti, 2 );
+                        
+                        sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 2 );
+
+                        sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                        sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                        
                         sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, 2 );
                         sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, 2 );
                         sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, 2 );
@@ -486,9 +662,18 @@ void fillEventYields(float lumi=4.0){
                         wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, 1 )+WJ_[nb]->GetBinContent( ij, mhti, 2 );
                         ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, 1)+tt_[nb]->GetBinContent( ij, mhti, 2);
                         SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, 1)+WJSL_[nb]->GetBinContent(ij, mhti, 2)+ttSL_[nb]->GetBinContent(ij, mhti, 1)+ttSL_[nb]->GetBinContent(ij, mhti, 2);
-                        LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, 1)+qcdLDP_[nb]->GetBinContent(ij, mhti, 2);
-                        GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, 1)+ziGJet_[nb]->GetBinContent(ij, mhti, 2);
+                        QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, 1)+QCDSL_[nb]->GetBinContent(ij, mhti, 1);
+                        ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, 1)+zSL_[nb]->GetBinContent(ij, mhti, 2);
 
+                        
+                        LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, 1)+qcdLDP_[nb]->GetBinContent(ij, mhti, 2);
+                        
+                        SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, 1)+WJLDP_[nb]->GetBinContent(ij, mhti, 2)+ttLDP_[nb]->GetBinContent(ij, mhti, 1)+ttLDP_[nb]->GetBinContent(ij, mhti, 2);
+                        ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, 1)+ZLDP_[nb]->GetBinContent(ij, mhti, 2);
+
+                        GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, 1)+ziGJet_[nb]->GetBinContent(ij, mhti, 2);
+                                  QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, 1)+qcdPho_[nb]->GetBinContent(ij, mhti, 2);
+                        SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, 1)+WJPho_[nb]->GetBinContent(ij, mhti, 2)+ttPho_[nb]->GetBinContent(ij, mhti, 1)+ttPho_[nb]->GetBinContent(ij, mhti, 2);
                         if(hti==3){
                             boxcount=5;
                             sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, hti );
@@ -497,6 +682,27 @@ void fillEventYields(float lumi=4.0){
                             sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti );
                             sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti );
                             sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti );
+                            
+                            sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                            
+                            sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                            
+                            sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti );
                             
                             sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti );
                             sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti );
@@ -510,8 +716,21 @@ void fillEventYields(float lumi=4.0){
                             wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti );
                             ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti );
                             SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti);
+                            QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, hti);
+                            ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, hti);
+
+                            
+                            
                             LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti);
+                            SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, hti)+ttLDP_[nb]->GetBinContent(ij, mhti, hti);
+                            ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, hti);
+
+                            
+                            
                             GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, hti);
+                            QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, hti);
+                            SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, hti)+ttPho_[nb]->GetBinContent(ij, mhti, hti);
+
                         }
                         //std::cout<<"Ibin "<<ibin<<"nj "<<ij<<" nb "<<nb<<" hti "<< hti<<" mhti "<<mhti<<std::endl;
 
@@ -532,51 +751,12 @@ void fillEventYields(float lumi=4.0){
     fprintf(fp,"\\caption{TEST}\n");
     fprintf(fp,"\\end{table}\n");
     fprintf(fp,"\\end{document}\n"); //made Latex File with Yields
-    f0->Close();
     fclose(fp);
-    
-    TDirectory* bin1=fS->mkdir("bin1");
-    bin1->cd();
-    sig->Write();
-    QCD->Write();
-    WJttbar->Write();
-    Zinv->Write();
-    data_obs->Write();
-    TDirectory* bin2=fS->mkdir("bin2");
-    bin2->cd();
-    
-    sig_0L->SetName("sig");
-    QCD_0L->SetName("QCD");
-    WJttbar_0L->SetName("WJttbar");
-    Zinv_0L->SetName("Zinv");
-    data_obs0L->SetName("data_obs");
 
-    sig_0L->Write();
-    QCD_0L->Write();
-    WJttbar_0L->Write();
-    Zinv_0L->Write();
-    data_obs0L->Write();
-    
-    TDirectory* bin3=fS->mkdir("bin3");
-    bin3->cd();
-    sig_1L->SetName("sig");
-    QCD_1L->SetName("QCD");
-    WJttbar_1L->SetName("WJttbar");
-    Zinv_1L->SetName("Zinv");
-    data_obs1L->SetName("data_obs");
-    
-    sig_1L->Write();
-    QCD_1L->Write();
-    WJttbar_1L->Write();
-    Zinv_1L->Write();
-    data_obs1L->Write();
-    
     f0->Close();
     f1->Close();
     f2->Close();
     f3->Close();
-    fS->Close();
-    // fclose(fp);
 
 }
 
@@ -589,14 +769,33 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fillEventYields(lumi);
     
     for(int i=0; i<totalbins; ++i){
-        if(Options=="T1tttt" && mGlu==1500){sig[i]=sig4t1500[i]; sigRaw[i]=sig4t1500raw[i]; }
-        if(Options=="T1tttt" && mGlu==1200){sig[i]=sig4t1200[i];sigRaw[i]=sig4t1200raw[i]; }
-        if(Options=="T1qqqq" && mGlu==1400){sig[i]=sig4q1400[i];sigRaw[i]=sig4q1400raw[i]; }
-        if(Options=="T1qqqq"  && mGlu==1000){sig[i]=sig4q1000[i];sigRaw[i]=sig4q1000raw[i]; }
-        if(Options=="T1bbbb" && mGlu==1500){sig[i]=sig4b1500[i];sigRaw[i]=sig4b1500raw[i]; }
-        if(Options=="T1bbbb" && mGlu==1000){sig[i]=sig4b1000[i];sigRaw[i]=sig4b1000raw[i]; }
+        if(Options=="T1tttt" && mGlu==1500){
+            sig[i]=sig4t1500[i]; sigRaw[i]=sig4t1500raw[i];sigSL[i]=sig4t1500SL[i];sigLDP[i]=sig4t1500LDP[i];sigPho[i]=sig4t1500Pho[i];
+        }
+        if(Options=="T1tttt" && mGlu==1200){
+            sig[i]=sig4t1200[i];sigRaw[i]=sig4t1200raw[i];sigSL[i]=sig4t1200SL[i];sigLDP[i]=sig4t1200LDP[i];
+            sigPho[i]=sig4t1200Pho[i];
+        }
+        if(Options=="T1qqqq" && mGlu==1400){
+            sig[i]=sig4q1400[i];sigRaw[i]=sig4q1400raw[i];sigSL[i]=sig4q1400SL[i];sigLDP[i]=sig4q1400LDP[i];
+            sigPho[i]=sig4q1400Pho[i];
+        }
+        if(Options=="T1qqqq"  && mGlu==1000){
+            sig[i]=sig4q1000[i];sigRaw[i]=sig4q1000raw[i];sigSL[i]=sig4q1000SL[i];sigLDP[i]=sig4q1000LDP[i];
+            sigPho[i]=sig4q1000Pho[i];
+        }
+        if(Options=="T1bbbb" && mGlu==1500){
+            sig[i]=sig4b1500[i];sigRaw[i]=sig4b1500raw[i];sigSL[i]=sig4b1500SL[i];sigLDP[i]=sig4b1500LDP[i];
+            sigPho[i]=sig4b1500Pho[i];
 
-        obs[i]=(qcd[i]+ zi[i]+wj[i]+ttbar[i] + (mu*sig[i])); 
+        }
+        if(Options=="T1bbbb" && mGlu==1000){
+            sig[i]=sig4b1000[i];sigRaw[i]=sig4b1000raw[i];sigSL[i]=sig4b1000SL[i];sigLDP[i]=sig4b1000LDP[i];
+            sigPho[i]=sig4b1000Pho[i];
+
+        }
+        
+        obs[i]=(qcd[i]+ zi[i]+wj[i]+ttbar[i] + (mu*sig[i]));
     }
 
     //std::cout << "bin = " << bin << " " << qcd[bin] << " " << zi[bin] << " " << wj[bin] << " " << ttbar[bin] << " " << sig[bin] << " " << LDP[bin] << " " << SL[bin] << " " << GJet[bin] << std::endl;
@@ -606,7 +805,10 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     float gjetScale=1.0; //???
     
     // --------------------------------
+
     // some code for the gamma + jets estimation
+    
+ /*
     int ibin=0;
     int nbForCurrentBin = -99;
     for ( int ij=1; ij<=3; ij++ ) {
@@ -622,39 +824,40 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     }
 
     // std::cout << "nbForCurrentBin = " << nbForCurrentBin << std::endl;
-
+*/
+    
     TString str=(TString::Format("./DataCards/SensStudyLumi%2.2f_Bin%d_M%d_m%d_%s.dat",lumi,bin, mGlu, MLSP,Options.Data())).Data();
     // const char outputfilename[100]=str.Data();
 
     FILE* fp = fopen(  str.Data(), "w" ) ;
     
     int numberOfChannels = 3;
-    if (nbForCurrentBin == 0) numberOfChannels = 4;
+    if (Bbins[bin] == 0) numberOfChannels = 4;
     fprintf(fp, "imax %d number of channels\n", numberOfChannels);//signal region PLUS 3 control bins
     fprintf(fp, "jmax %d number of backgrounds (QCD, Zinv, WJttbar)\n",3);//4 bkg processes
     fprintf(fp, "kmax * nuissance\n");
     fprintf(fp, "------------\n");
-    if (nbForCurrentBin == 0) fprintf(fp, "bin Bin%d BinContLDP%d BinContSL%d BinContPh%d ", bin,bin,bin,bin);
-    if (nbForCurrentBin > 0) fprintf(fp, "bin Bin%d BinContLDP%d BinContSL%d ", bin,bin,bin);
+    if (Bbins[bin] == 0) fprintf(fp, "bin Bin%d BinContLDP%d BinContSL%d BinContPh%d ", bin,bin,bin,bin);
+    if (Bbins[bin] > 0) fprintf(fp, "bin Bin%d BinContLDP%d BinContSL%d ", bin,bin,bin);
     //4 bins
-    if (nbForCurrentBin == 0) fprintf(fp, "\nobservation %g %g %g %g", obs[bin],LDP[bin],SL[bin],GJet[bin]);
-    if (nbForCurrentBin > 0) fprintf(fp, "\nobservation %g %g %g", obs[bin],LDP[bin],SL[bin]);
+    if (Bbins[bin] == 0) fprintf(fp, "\nobservation %g %g %g %g", obs[bin],LDP[bin]+ZLDP[bin]+SLLDP[bin]+sigLDP[bin],SL[bin]+QCDSL[bin]+ZLDP[bin]+sigSL[bin],GJet[bin]+QCDPho[bin]+SLPho[bin]+sigPho[bin]);
+    if (Bbins[bin] > 0) fprintf(fp, "\nobservation %g %g %g", obs[bin],LDP[bin]+ZLDP[bin]+SLLDP[bin]+sigLDP[bin],SL[bin]+QCDSL[bin]+ZLDP[bin]+sigSL[bin]);
    //4 Expected Count bins (MC)
     fprintf(fp, "\nbin Bin%d  Bin%d  Bin%d  Bin%d ", bin,bin, bin, bin);
     fprintf(fp, "BinContLDP%d  BinContLDP%d  BinContLDP%d  BinContLDP%d ",bin, bin,bin, bin);
     fprintf(fp, "BinContSL%d  BinContSL%d  BinContSL%d  BinContSL%d ", bin,bin, bin, bin);
-    if (nbForCurrentBin == 0) fprintf(fp, "BinContPh%d  BinContPh%d  BinContPh%d  BinContPh%d ", bin,bin, bin, bin);
+    if (Bbins[bin] == 0) fprintf(fp, "BinContPh%d  BinContPh%d  BinContPh%d  BinContPh%d ", bin,bin, bin, bin);
     //fprintf(fp, "BinContT%d  BinContT%d  BinContT%d  BinContT%d  BinContT%d ",bin, bin,bin, bin, bin);
     
     fprintf(fp, "\nprocess sig QCD Zinv WJttbar ");
     fprintf(fp, "sig QCD Zinv WJttbar  ");
     fprintf(fp, "sig QCD Zinv WJttbar  ");
-    if (nbForCurrentBin == 0) fprintf(fp, "sig QCD Zinv WJttbar  ");
+    if (Bbins[bin] == 0) fprintf(fp, "sig QCD Zinv WJttbar  ");
     
     fprintf(fp, "\nprocess %d %d %d %d ", 0, 1,2,3);
     fprintf(fp, "%d %d %d %d ",0, 1,2,3);
     fprintf(fp, "%d %d %d %d ",0, 1,2,3);
-    if (nbForCurrentBin == 0) fprintf(fp, "%d %d %d %d ",0, 1,2,3);
+    if (Bbins[bin] == 0) fprintf(fp, "%d %d %d %d ",0, 1,2,3);
     
     //NOW THIS IS MY EXPECTED SIGNAL REGION!
     fprintf(fp, "\nrate %g ", sig[bin]);
@@ -666,24 +869,25 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     else fprintf(fp, " %g ",0.001);
     
     //QCD Region 1
-    fprintf(fp, " %g ",0.);
+    fprintf(fp, " %g ",sigLDP[bin]);
     if(LDP[bin]>0.0000000000000000001)fprintf(fp, " %g ",LDP[bin]);
     else fprintf(fp, " %g ",qcdscale*0.001);
     //fprintf(fp, " %g ",10.);
-    fprintf(fp, " %g %g ",0., 0.);
+    fprintf(fp, " %g %g ",ZLDP[bin], SLLDP[bin]);
     
     //WJ/TTbar Region 1
-    fprintf(fp, " %g %g %g",0.,0.,0.0);
+    fprintf(fp, " %g %g %g",sigSL[bin],QCDSL[bin],ZSL[bin]);
     if(SL[bin]>0.0000000000000000001)fprintf(fp, " %g ",SL[bin]);
     else fprintf(fp, " %g ", ttbarScale*0.001);
-    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
 
+    
     //Gamma+jets Region 1
-    if (nbForCurrentBin == 0){
-        fprintf(fp, " %g %g",0.,0.);
+    if (Bbins[bin] == 0){
+        fprintf(fp, " %g %g",sigPho[bin],QCDPho[bin]);
         if(GJet[bin]>0.0000000000000000001)fprintf(fp, " %g ",GJet[bin]);
         else fprintf(fp, " %g ", gjetScale*0.001);
-        fprintf(fp, "%g \n", 0.);
+        fprintf(fp, "%g \n", SLPho[bin]);
     }
 
     ////////////////////////
@@ -695,42 +899,41 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     if(LDP[bin]>0.0000000000000000001){
         fprintf(fp, "rateBqcd%d lnU - %8.1f - - ",bin, logUErr );
         fprintf(fp, " - %8.1f - - ",logUErr);
-        if (nbForCurrentBin == 0) fprintf(fp, " - - - -  ");
-        fprintf(fp, " - - - -\n");
+        if (Bbins[bin] == 0) fprintf(fp, " - %8.1f - -  ", logUErr);
+        fprintf(fp, " - %8.1f - -\n",logUErr);
     }
     else {
        logUErr=10000;
        fprintf(fp, "rateBqcd%d lnU - %8.1f - - ",bin, logUErr );
        fprintf(fp, " - %8.1f - - ",logUErr);
-       if (nbForCurrentBin == 0) fprintf(fp, " - - - -  ");
-       fprintf(fp, " - - - -\n");
-
+        if (Bbins[bin] == 0) fprintf(fp, " - %8.1f - -  ", logUErr);
+        fprintf(fp, " - %8.1f - -\n",logUErr);
     }
 
    fprintf(fp, "LogBqcd%d lnN - %g - -  ",bin, 1.3 );
    fprintf(fp, " - - - -  ");
-   if (nbForCurrentBin == 0) fprintf(fp, " - - - -  ");
+   if (Bbins[bin] == 0) fprintf(fp, " - - - -  ");
    fprintf(fp, " - - - -  \n");
 
     if(SL[bin]>0.0000000000000000001){
         logUErr=100;
         fprintf(fp, "rateBW%d lnU - - - %8.1f  ",bin, logUErr );
-        fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - %8.1f  ",logUErr);
-        if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-        if (nbForCurrentBin > 0) fprintf(fp, "\n");
+        fprintf(fp, " - - - %8.1f  ",logUErr);
+        if (Bbins[bin] == 0) fprintf(fp, " - - - %8.1f  \n", logUErr);
+        if (Bbins[bin] > 0) fprintf(fp, "\n");
     }
     else{
         logUErr=10000;
         fprintf(fp, "rateBW%d lnU - - - %8.1f  ",bin, logUErr );
-        fprintf(fp, " - - - -  ");
+        fprintf(fp, " - - - %8.1f  ", logUErr);
         fprintf(fp, " - - - %8.1f  ",logUErr);  
-        if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-        if (nbForCurrentBin > 0) fprintf(fp, "\n");
+        if (Bbins[bin] == 0) fprintf(fp, " - - - %8.1f  \n", logUErr);
+        if (Bbins[bin] > 0) fprintf(fp, "\n");
     }
 
 
-    if (nbForCurrentBin == 0){
+    if (Bbins[bin] == 0){
         logUErr=100;
         fprintf(fp, "rateBPh%d lnU - - %8.1f -  ",bin, logUErr );
         fprintf(fp, " - - - -  ");
@@ -754,11 +957,11 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
         fprintf(fp, " - - - -  \n");
     }
     else{
-        fprintf(fp, "rateB0BTo%1iB%d lnU - - %8.1f -  ",nbForCurrentBin,bin, logUErr );
+        fprintf(fp, "rateB0BTo%1iB%d lnU - - %8.1f -  ",Bbins[bin],bin, logUErr );
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  \n");
-        fprintf(fp, "LogB0BTo%iB lnN - - %g -  ",nbForCurrentBin, 1.3 );
+        fprintf(fp, "LogB0BTo%iB lnN - - %g -  ",Bbins[bin], 1.3 );
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  \n");
@@ -768,20 +971,14 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
         fprintf(fp, " - - - -  \n");        
     }
 
-    //don't need this anymore (covered by Non Closure and Lep Eff)
-    /*
-    fprintf(fp, "LogBW%d lnN - - - %g  ",bin, 1.3 );
-    fprintf(fp, " - - - -  ");
-    fprintf(fp, " - - - -  \n");
-    */
 
     
     fprintf(fp, "LogBZ%d lnN - - %g - ",bin, 1.3 );
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
     
     //apply b-tag uncertainty
     
@@ -792,8 +989,8 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
 
     float btagerrDown=1.0;
     if(Bbins[bin]==0)btagerrDown=1.1;
@@ -803,22 +1000,22 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
     
     fprintf(fp, "lumi lnN %g - - - ", 1.044 );
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
     
     fprintf(fp, "PDFUnc lnN %g - - - ", 1.1 );
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
     
     float JEC_UnclECorr=1.0;
     
@@ -833,15 +1030,15 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-    if (nbForCurrentBin > 0) fprintf(fp, "\n");    
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");    
     
     fprintf(fp, "MCstat_%d lnN %g - - - ", bin,1+(sqrt(sigRaw[bin]))/sigRaw[bin]) ;
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
 
     
     //background systematics
@@ -860,8 +1057,8 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
 
     float MCClose=1.0;
     if(njbins[bin]==1)MCClose=1.1;
@@ -872,8 +1069,8 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    if (nbForCurrentBin == 0) fprintf(fp, " - - - -  \n");
-    if (nbForCurrentBin > 0) fprintf(fp, "\n");
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
     
     
 }
