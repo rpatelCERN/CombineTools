@@ -199,6 +199,7 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
         sig4q1400_[b]=new TH3F(TString::Format("sig4q1400__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         
         
+        
         sig4t1500Raw_[b]=new TH3F(TString::Format("sig4t1500Raw__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         sig4t1200Raw_[b]=new TH3F(TString::Format("sig4t1200Raw__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         
@@ -364,7 +365,6 @@ void fillEventYields(float lumi=4.0){
     TH3F*ZLDP_[4];
     //GJets
     TH3F*ziGJet_[4];
-    TH3F*sigPho_[4];
     TH3F*qcdPho_[4];
     TH3F*ttPho_[4];
     TH3F*WJPho_[4];
@@ -440,7 +440,7 @@ void fillEventYields(float lumi=4.0){
     
     //signal strength
     FILE* fp = fopen(  "OutputTable.tex", "w" ) ;
-
+/*
     TH1F*sig=new TH1F("sig", "", 72, 0,71);
 
     TH1F*data_obs=new TH1F("data_obs", "", 72, 0,71);
@@ -463,7 +463,7 @@ void fillEventYields(float lumi=4.0){
     TH1F*QCD_1L=new TH1F("QCD_1L", "", 72, 0,71);//never fill this
     TH1F*WJttbar_1L=new TH1F("WJttbar_1L", "", 72, 0,71);
     TH1F*Zinv_1L=new TH1F("Zinv_1L", "", 72, 0,71);//never fill this
-    
+*/
 
     fprintf(fp, "\\documentclass[10pt,a4paper]{article}\n");
     fprintf(fp, "\\usepackage[utf8]{inputenc}\n");
