@@ -217,7 +217,7 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
         DY_[b]=new TH3F(TString::Format("DY__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         
         
-        sprintf( cuts, "(%s && %s )%s", commoncuts,bcutstringRectangular[b],weightstring );
+        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi );
         sprintf( cutsUW, "(%s && %s )", commoncuts,bcutstringRectangular[b] );
 
         //HT30:MHT:NJets30
@@ -229,24 +229,18 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
             MHTString = "MHTnoPhotons";
         }
 
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1tt1500.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>sig4t1500__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;
         t1tt1500.Draw( arg1, cuts );
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1tt1200.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>sig4t1200__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;
         t1tt1200.Draw( arg1, cuts );
         
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1qq1400.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>sig4q1400__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1qq1400.Draw( arg1, cuts );
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1qq1000.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>sig4q1000__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1qq1000.Draw( arg1, cuts );
         
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1bb1500.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>sig4b1500__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1bb1500.Draw( arg1, cuts );
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)t1bb1000.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>sig4b1000__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1bb1000.Draw( arg1, cuts );
         
@@ -266,22 +260,16 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
         sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4b1000Raw__b%d",b).Data()) ;
         t1bb1000.Draw( arg1, cutsUW );
         
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)QCDCH.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>qcd__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
         QCDCH.Draw( arg1, cuts ) ;
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)tt.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>tt__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
         tt.Draw( arg1, cuts ) ;
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)WJets.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>WJ__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
         WJets.Draw( arg1, cuts );
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)Zinv.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>ZI__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
         Zinv.Draw( arg1, cuts ) ;
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)GJets.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>GJ__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
         GJets.Draw( arg1, cuts ) ;
-        sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi/((float)DY.GetEntries()) );
         sprintf( arg1, TString::Format("%s:%s:%s>>DY__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
         DY.Draw( arg1, cuts ) ;
 
