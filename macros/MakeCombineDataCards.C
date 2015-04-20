@@ -828,8 +828,8 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     if (Bbins[bin] == 0) fprintf(fp, "bin Bin%d BinContLDP%d BinContSL%d BinContPh%d ", bin,bin,bin,bin);
     if (Bbins[bin] > 0) fprintf(fp, "bin Bin%d BinContLDP%d BinContSL%d ", bin,bin,bin);
     //4 bins
-    if (Bbins[bin] == 0) fprintf(fp, "\nobservation %g %g %g %g", obs[bin],LDP[bin]+ZLDP[bin]+SLLDP[bin]+sigLDP[bin],SL[bin]+QCDSL[bin]+ZLDP[bin]+sigSL[bin],GJet[bin]+QCDPho[bin]+SLPho[bin]+sigPho[bin]);
-    if (Bbins[bin] > 0) fprintf(fp, "\nobservation %g %g %g", obs[bin],LDP[bin]+ZLDP[bin]+SLLDP[bin]+sigLDP[bin],SL[bin]+QCDSL[bin]+ZLDP[bin]+sigSL[bin]);
+    if (Bbins[bin] == 0) fprintf(fp, "\nobservation %g %g %g %g", obs[bin],LDP[bin]+ZLDP[bin]+SLLDP[bin]+sigLDP[bin],SL[bin]+QCDSL[bin]+ZSL[bin]+sigSL[bin],GJet[bin]+QCDPho[bin]+SLPho[bin]+sigPho[bin]);
+    if (Bbins[bin] > 0) fprintf(fp, "\nobservation %g %g %g", obs[bin],LDP[bin]+ZLDP[bin]+SLLDP[bin]+sigLDP[bin],SL[bin]+QCDSL[bin]+ZSL[bin]+sigSL[bin]);
    //4 Expected Count bins (MC)
     fprintf(fp, "\nbin Bin%d  Bin%d  Bin%d  Bin%d ", bin,bin, bin, bin);
     fprintf(fp, "BinContLDP%d  BinContLDP%d  BinContLDP%d  BinContLDP%d ",bin, bin,bin, bin);
@@ -927,15 +927,15 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - %8.1f - \n",logUErr);
-        fprintf(fp, "rateB0BTo1B%d lnU - - %8.1f -  ",bin+9, logUErr );
+        fprintf(fp, "rateB0BTo1B lnU - - %8.1f -  ", logUErr );
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  \n");
-        fprintf(fp, "rateB0BTo2B%d lnU - - %8.1f -  ",bin+18, logUErr );
+        fprintf(fp, "rateB0BTo2B lnU - - %8.1f -  ", logUErr );
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  \n");
-        fprintf(fp, "rateB0BTo3B%d lnU - - %8.1f -  ",bin+27, logUErr );
+        fprintf(fp, "rateB0BTo3B lnU - - %8.1f -  ", logUErr );
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  \n");
@@ -945,7 +945,7 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
         fprintf(fp, " - - - -  \n");
     }
     else{
-        fprintf(fp, "rateB0BTo%1iB%d lnU - - %8.1f -  ",Bbins[bin],bin, logUErr );
+        fprintf(fp, "rateB0BTo%1iB lnU - - %8.1f -  ",Bbins[bin], logUErr );
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  \n");
@@ -960,14 +960,14 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     }
 
 
-    
+   /* 
     fprintf(fp, "LogBZ%d lnN - - %g - ",bin, 1.3 );
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
     if (Bbins[bin] > 0) fprintf(fp, "\n");
-    
+    */
     //apply b-tag uncertainty
     
     float btagerrUP=1.0;
