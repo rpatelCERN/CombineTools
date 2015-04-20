@@ -80,6 +80,16 @@ float sig4b1000Pho[totalbins];
 void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
     
     std::cout << "Processing with option = " << Options << std::endl;
+    //HT30:MHT:NJets30
+    string HTString = "HT";
+    string MHTString  = "MHT";
+    string NJString = "NJets";
+    if(Options=="GJet"){
+        HTString = "HTnoPhotons";
+        MHTString = "MHTnoPhotons";
+    }
+
+
 
     const int nBinsjets = 3 ;
     const int nBinsBjets = 4 ;
@@ -209,6 +219,8 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
         
         sig4q1000Raw_[b]=new TH3F(TString::Format("sig4q1000Raw__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         sig4q1400Raw_[b]=new TH3F(TString::Format("sig4q1400Raw__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
+        
+
         qcd_[b]=new TH3F(TString::Format("qcd__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular, nBinsHT,HTBinRectangular );
         tt_[b]=new TH3F(TString::Format("tt__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
         WJ_[b]=new TH3F(TString::Format("WJ__b%d", b).Data(), "", nBinsjets, NJets,nBinsMHT,MHTBinRectangular,nBinsHT,HTBinRectangular  );
@@ -219,15 +231,6 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
         
         sprintf( cuts, "(%s && %s )*(lheWeight*%e)", commoncuts,bcutstringRectangular[b],lumi );
         sprintf( cutsUW, "(%s && %s )", commoncuts,bcutstringRectangular[b] );
-
-        //HT30:MHT:NJets30
-        string HTString = "HT";
-        string MHTString  = "MHT";
-        string NJString = "NJets";
-        if(Options=="GJet"){
-            HTString = "HTnoPhotons";
-            MHTString = "MHTnoPhotons";
-        }
 
         sprintf( arg1, TString::Format("%s:%s:%s>>sig4t1500__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;
         t1tt1500.Draw( arg1, cuts );
@@ -245,19 +248,19 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
         t1bb1000.Draw( arg1, cuts );
         
         
-        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4t1500Raw__b%d",b).Data()) ;
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4t1500Raw__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;
         t1tt1500.Draw( arg1, cutsUW );
-        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4t1200Raw__b%d",b).Data()) ;
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4t1200Raw__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;
         t1tt1200.Draw( arg1, cutsUW );
         
-        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4q1400Raw__b%d",b).Data()) ;
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4q1400Raw__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1qq1400.Draw( arg1, cutsUW );
-        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4q1000Raw__b%d",b).Data()) ;
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4q1000Raw__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1qq1000.Draw( arg1, cutsUW );
         
-        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4b1500Raw__b%d",b).Data()) ;
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4b1500Raw__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1bb1500.Draw( arg1, cutsUW );
-        sprintf( arg1, TString::Format("HT:MHT:NJets>>sig4b1000Raw__b%d",b).Data()) ;
+        sprintf( arg1, TString::Format("%s:%s:%s>>sig4b1000Raw__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;        
         t1bb1000.Draw( arg1, cutsUW );
         
         sprintf( arg1, TString::Format("%s:%s:%s>>qcd__b%d",HTString.c_str(),MHTString.c_str(),NJString.c_str(),b).Data()) ;                
@@ -848,13 +851,15 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     if (Bbins[bin] == 0) fprintf(fp, "%d %d %d %d ",0, 1,2,3);
     
     //NOW THIS IS MY EXPECTED SIGNAL REGION!
-    fprintf(fp, "\nrate %g ", sig[bin]);
-    if(qcd[bin]>0.0000000000000000001)fprintf(fp, " %g ", qcd[bin]);
-    else fprintf(fp, " %g ",0.001);
+    if(sig[bin]>0.0000000000000000001) fprintf(fp, "\nrate %g ", sig[bin]);
+    else fprintf(fp, "\nrate %g ", 0.000001);
+    
+    if(qcd[bin]>0.0000000000000000001) fprintf(fp, " %g ", qcd[bin]);
+    else fprintf(fp, " %g ",0.0000001);
     
     fprintf(fp, " %g ", zi[bin]);
     if(wj[bin]+ttbar[bin]>0.0000000000000000001)fprintf(fp, " %g ",wj[bin]+ttbar[bin]);
-    else fprintf(fp, " %g ",0.001);
+    else fprintf(fp, " %g ",0.0000001);
     
     //QCD Region 1
     fprintf(fp, " %g ",sigLDP[bin]);
@@ -883,6 +888,8 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     ////////////////////////
     fprintf(fp, "------------\n");
 
+    ///--------------------------------------
+    /// QCD
     float logUErr=100.;
     if(LDP[bin]>0.0000000000000000001){
         fprintf(fp, "rateBqcd%d lnU - %8.1f - - ",bin, logUErr );
@@ -903,6 +910,8 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
    if (Bbins[bin] == 0) fprintf(fp, " - - - -  ");
    fprintf(fp, " - - - -  \n");
 
+    ///--------------------------------------
+    /// SL
     if(SL[bin]>0.0000000000000000001){
         logUErr=100;
         fprintf(fp, "rateBW%d lnU - - - %8.1f  ",bin, logUErr );
@@ -920,6 +929,37 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
         if (Bbins[bin] > 0) fprintf(fp, "\n");
     }
 
+    //background systematics
+    //lepton efficiency in MHT/HT plane
+
+    float LepEff=1.0;
+    
+    if(mbins[bin]==1)LepEff=1.05;
+    if(mbins[bin]==2)LepEff=1.07;
+    if(mbins[bin]==3)LepEff=1.10;
+    if(mbins[bin]==4)LepEff=1.07;
+    if(mbins[bin]==5)LepEff=1.1;
+    if(mbins[bin]==6)LepEff=1.1;
+    
+    fprintf(fp, "LepEff lnN - - - %g ", LepEff );
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
+
+    float MCClose=1.0;
+    if(njbins[bin]==1)MCClose=1.1;
+    if(njbins[bin]==2)MCClose=1.2;
+    if(njbins[bin]==3)MCClose=1.3;
+
+    fprintf(fp, "MCClose_%d lnN - - - %g ", bin,MCClose) ;
+    fprintf(fp, " - - - - ");
+    fprintf(fp, " - - - - ");
+    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
+    if (Bbins[bin] > 0) fprintf(fp, "\n");
+
+    ///--------------------------------------    
+    /// Zinv
 
     if (Bbins[bin] == 0){
         logUErr=100;
@@ -947,17 +987,15 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     else{
         fprintf(fp, "rateB0BTo%1iB lnU - - %8.1f -  ",Bbins[bin], logUErr );
         fprintf(fp, " - - - -  ");
-        fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  \n");
         fprintf(fp, "LogB0BTo%iB lnN - - %g -  ",Bbins[bin], 1.3 );
-        fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  \n");
         fprintf(fp, "LogBPh lnN - - %g -  ", 1.3 );
         fprintf(fp, " - - - -  ");
-        fprintf(fp, " - - - -  ");
         fprintf(fp, " - - - -  \n");        
     }
+    ///--------------------------------------    
 
 
    /* 
@@ -976,7 +1014,6 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, "BTagEffSigmaUp lnN %g - - - ", btagerrUP );
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - ");
     if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
     if (Bbins[bin] > 0) fprintf(fp, "\n");
 
@@ -987,19 +1024,16 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, "BTagEffSigmaDown lnN %g - - - ",btagerrDown );
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - ");
     if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
     if (Bbins[bin] > 0) fprintf(fp, "\n");
     
     fprintf(fp, "lumi lnN %g - - - ", 1.044 );
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - ");
     if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
     if (Bbins[bin] > 0) fprintf(fp, "\n");
     
     fprintf(fp, "PDFUnc lnN %g - - - ", 1.1 );
-    fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
@@ -1017,48 +1051,15 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     fprintf(fp, "JEC lnN %g - - - ", JEC_UnclECorr );
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - ");
     if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
     if (Bbins[bin] > 0) fprintf(fp, "\n");    
     
-    fprintf(fp, "MCstat_%d lnN %g - - - ", bin,1+(sqrt(sigRaw[bin]))/sigRaw[bin]) ;
-    fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - ");
-    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
-    if (Bbins[bin] > 0) fprintf(fp, "\n");
-
-    
-    //background systematics
-    //lepton efficiency in MHT/HT plane
-
-    float LepEff=1.0;
-    
-    if(mbins[bin]==1)LepEff=1.05;
-    if(mbins[bin]==2)LepEff=1.07;
-    if(mbins[bin]==3)LepEff=1.10;
-    if(mbins[bin]==4)LepEff=1.07;
-    if(mbins[bin]==5)LepEff=1.1;
-    if(mbins[bin]==6)LepEff=1.1;
-    
-    fprintf(fp, "LepEff lnN - - - %g ", LepEff );
-    fprintf(fp, " - - - - ");
+    if (sigRaw[bin] > 0.0001) fprintf(fp, "MCstat_%d lnN %g - - - ", bin,1+(sqrt(sigRaw[bin]))/sigRaw[bin]) ;
+    else fprintf(fp, "MCstat_%d lnN %g - - - ", bin,100.) ;
     fprintf(fp, " - - - - ");
     fprintf(fp, " - - - - ");
     if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
     if (Bbins[bin] > 0) fprintf(fp, "\n");
-
-    float MCClose=1.0;
-    if(njbins[bin]==1)MCClose=1.1;
-    if(njbins[bin]==2)MCClose=1.2;
-    if(njbins[bin]==3)MCClose=1.3;
-
-    fprintf(fp, "MCClose_%d lnN - - - %g ", bin,MCClose) ;
-    fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - ");
-    fprintf(fp, " - - - - ");
-    if (Bbins[bin] == 0) fprintf(fp, " - - - -  \n");
-    if (Bbins[bin] > 0) fprintf(fp, "\n");
-    
     
 }
+                                                                                                                                                                                                                                                                                                      
