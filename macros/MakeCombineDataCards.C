@@ -77,7 +77,7 @@ float sig4b1500Pho[totalbins];
 float sig4b1000Pho[totalbins];
 
 
-void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
+void MakeInputHisto(TString Options="Signal", float lumi=4, int doSMJ = 0){  //all input files
     
     std::cout << "Processing with option = " << Options << std::endl;
     //HT30:MHT:NJets30
@@ -88,8 +88,13 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
         HTString = "HTnoPhotons";
         MHTString = "MHTnoPhotons";
     }
-
-
+    if (doSMJ == 1){
+        HTString = "ak1p2Jets_sumJetMass";
+    }
+    if (doSMJ == 1 && Options=="GJet"){
+        HTString = "ak1p2Jets_sumJetMass";
+        MHTString = "MHTnoPhotons";
+    }
 
     const int nBinsjets = 3 ;
     const int nBinsBjets = 4 ;
@@ -100,6 +105,13 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
     float MHTBinRectangular[4]={200, 500., 750.,9999.};
     float HTBinRectangular[4]={500., 800., 1200.,9999.};//can do 150 to
     
+    if (doSMJ == 1){
+        HTBinRectangular[0]=50.;
+        HTBinRectangular[1]=300.;
+        HTBinRectangular[2]=550.;
+        HTBinRectangular[3]=9999.;
+    }
+
     char bcutstringRectangular[nBinsBjets][100] = { "BTags==0", "BTags==1","BTags==2", "BTags>=3" } ;
     float NJets[4]={4, 7,9,99};
     //these are in an eos area on lxplus:/eos/cms/store/user/rpatel/RA2b
@@ -302,7 +314,7 @@ void MakeInputHisto(TString Options="Signal", float lumi=4){  //all input files
 
 }
 //THIS DEFINES THE BINNING and PRODUCES THE LATEX TABLE
-void fillEventYields(float lumi=4.0){
+void fillEventYields(float lumi=4.0, int doSMJ=0){
 
     TH3F*sig4t1200_[4];
     TH3F*sig4t1500_[4];
@@ -481,198 +493,32 @@ void fillEventYields(float lumi=4.0){
     
     int boxcount=0;
     int ibin=0;
-    for ( int ij=1; ij<=3; ij++ ) {
-        for(int nb=0; nb<=3; nb++){
-            for ( int mhti=1; mhti<=3; mhti++ ){
-                for ( int hti=1; hti<=3; hti++ ) {
 
-                    if(hti<2 && mhti==3)continue;
-                    
-                    if(mhti==1){
-                        boxcount=hti+mhti-1;
-                        sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti );
-                        
-                        sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti );
-                        
-                        sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti );
-                        
-                        sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti );
-                        
-                        sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti );
-                        sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti );
-                        
-                        qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti );
-                        zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti );
-                        wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti );
-                        ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti );
-                        SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti);
-                        QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, hti);
-                        ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, hti);
+    ////////////////////////////////////////////////////
+    // for HT
+    if (doSMJ == 0){
+        for ( int ij=1; ij<=3; ij++ ) {
+            for(int nb=0; nb<=3; nb++){
+                for ( int mhti=1; mhti<=3; mhti++ ){
+                    for ( int hti=1; hti<=3; hti++ ) {
 
-                        
-                        LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti);
-                        SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, hti)+ttLDP_[nb]->GetBinContent(ij, mhti, hti);
-                        ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, hti);
-                        
-                        GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, hti);
-                        QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, hti);
-                        SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, hti)+ttPho_[nb]->GetBinContent(ij, mhti, hti);
-                        
-                        
-                        ++ibin;
-                        
-                    }
-                    
-                    if(mhti==3){
-                        if(hti==3)continue;
-                        boxcount=4+hti;
-                        
-                        sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000_[nb]->GetBinContent( ij, mhti, 3 );
-                        
-                        sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500SL_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200SL_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400SL_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000SL_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500SL_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000SL_[nb]->GetBinContent( ij, mhti, 3 );
-                        
-                        sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 3 );
-
-                        sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 3 );
-                        
-                        sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000raw_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500raw_[nb]->GetBinContent( ij, mhti, 3 );
-                        sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000raw_[nb]->GetBinContent( ij, mhti, 3 );
-                        
-                        
-                        
-                        qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, 2 )+qcd_[nb]->GetBinContent( ij, mhti, 3 );
-                        zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, 2 )+ZI_[nb]->GetBinContent( ij, mhti, 3 );
-                        wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, 2 )+WJ_[nb]->GetBinContent( ij, mhti, 3 );
-                        ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, 2)+tt_[nb]->GetBinContent( ij, mhti, 3);
-                        SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, 2)+WJSL_[nb]->GetBinContent(ij, mhti, 3)+ttSL_[nb]->GetBinContent(ij, mhti, 2)+ttSL_[nb]->GetBinContent(ij, mhti, 3);
-                        QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, 2)+QCDSL_[nb]->GetBinContent(ij, mhti, 3);
-                        ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, 2)+zSL_[nb]->GetBinContent(ij, mhti, 3);
-
-                        
-                        LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, 2)+qcdLDP_[nb]->GetBinContent(ij, mhti, 3);
-                        ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, 2)+ZLDP_[nb]->GetBinContent(ij, mhti, 3);
-                        SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, 2)+WJLDP_[nb]->GetBinContent(ij, mhti, 3)+ttLDP_[nb]->GetBinContent(ij, mhti, 2)+ttLDP_[nb]->GetBinContent(ij, mhti, 3);
-                        
-                        GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, 2)+ziGJet_[nb]->GetBinContent(ij, mhti, 3);
-                        
-                        QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, 2)+qcdPho_[nb]->GetBinContent(ij, mhti, 3);
-                        SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, 2)+WJPho_[nb]->GetBinContent(ij, mhti, 3)+ttPho_[nb]->GetBinContent(ij, mhti, 2)+ttPho_[nb]->GetBinContent(ij, mhti, 3);
-                        
-                        ++ibin;
-                    }
-                    
-                    if(mhti==2){
-                        if(hti==2)continue;
-                        boxcount=4;
-                        // if(ij==1&& nb==0)++boxcount;
-                        sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000_[nb]->GetBinContent( ij, mhti, 2 );
-                        
-                        sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500SL_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200SL_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400SL_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000SL_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500SL_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000SL_[nb]->GetBinContent( ij, mhti, 2 );
-                        
-                        sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 2 );
-
-                        sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 2 );
-                        
-                        sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000raw_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500raw_[nb]->GetBinContent( ij, mhti, 2 );
-                        sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000raw_[nb]->GetBinContent( ij, mhti, 2 );
-                        
-                        qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, 1 )+qcd_[nb]->GetBinContent( ij, mhti, 2 );
-                        zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, 1 )+ZI_[nb]->GetBinContent( ij, mhti, 2 );
-                        wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, 1 )+WJ_[nb]->GetBinContent( ij, mhti, 2 );
-                        ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, 1)+tt_[nb]->GetBinContent( ij, mhti, 2);
-                        SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, 1)+WJSL_[nb]->GetBinContent(ij, mhti, 2)+ttSL_[nb]->GetBinContent(ij, mhti, 1)+ttSL_[nb]->GetBinContent(ij, mhti, 2);
-                        QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, 1)+QCDSL_[nb]->GetBinContent(ij, mhti, 1);
-                        ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, 1)+zSL_[nb]->GetBinContent(ij, mhti, 2);
-
-                        
-                        LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, 1)+qcdLDP_[nb]->GetBinContent(ij, mhti, 2);
-                        
-                        SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, 1)+WJLDP_[nb]->GetBinContent(ij, mhti, 2)+ttLDP_[nb]->GetBinContent(ij, mhti, 1)+ttLDP_[nb]->GetBinContent(ij, mhti, 2);
-                        ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, 1)+ZLDP_[nb]->GetBinContent(ij, mhti, 2);
-
-                        GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, 1)+ziGJet_[nb]->GetBinContent(ij, mhti, 2);
-                                  QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, 1)+qcdPho_[nb]->GetBinContent(ij, mhti, 2);
-                        SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, 1)+WJPho_[nb]->GetBinContent(ij, mhti, 2)+ttPho_[nb]->GetBinContent(ij, mhti, 1)+ttPho_[nb]->GetBinContent(ij, mhti, 2);
-                        if(hti==3){
-                            boxcount=5;
+                        //if(hti<2 && mhti==3) continue;                        
+                        if(mhti==1){
+                            // boxcount = 1,2,3
+                            boxcount=hti+mhti-1;
                             sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, hti );
                             sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, hti );
                             sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, hti );
                             sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti );
                             sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti );
                             sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti );
+                            
+                            sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                            sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti );
                             
                             sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti );
                             sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti );
@@ -695,14 +541,8 @@ void fillEventYields(float lumi=4.0){
                             sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti );
                             sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti );
                             
-                            sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti );
-                            sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti );
-                            sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti );
-                            sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti );
-                            sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti );
-                            sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti );
-                            
                             qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti );
+                            std::cout << "qcd_[nb]->GetBinContent( ij, mhti, hti ) = " << qcd_[nb]->GetBinContent( ij, mhti, hti ) << std::endl;
                             zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti );
                             wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti );
                             ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti );
@@ -711,32 +551,587 @@ void fillEventYields(float lumi=4.0){
                             ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, hti);
 
                             
-                            
                             LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti);
                             SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, hti)+ttLDP_[nb]->GetBinContent(ij, mhti, hti);
                             ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, hti);
-
                             
-                            
-                            GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, hti);
+                            GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, hti);
                             QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, hti);
                             SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, hti)+ttPho_[nb]->GetBinContent(ij, mhti, hti);
-
+                            
+                            ++ibin;
+                            
                         }
-                        //std::cout<<"Ibin "<<ibin<<"nj "<<ij<<" nb "<<nb<<" hti "<< hti<<" mhti "<<mhti<<std::endl;
+                        
+                        if(mhti==3){
+                            if(hti==3 || hti==1) continue;
+                            boxcount=4+hti;
+                            // boxcount = 6
+                            sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000_[nb]->GetBinContent( ij, mhti, 3 );
+                            
+                            sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500SL_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200SL_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400SL_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000SL_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500SL_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000SL_[nb]->GetBinContent( ij, mhti, 3 );
+                            
+                            sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 3 );
 
-                        ++ibin;
+                            sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 3 );
+                            
+                            sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4q1000raw_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1500raw_[nb]->GetBinContent( ij, mhti, 3 );
+                            sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, 2 )+sig4b1000raw_[nb]->GetBinContent( ij, mhti, 3 );
+                            
+                            qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, 2 )+qcd_[nb]->GetBinContent( ij, mhti, 3 );
+                            zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, 2 )+ZI_[nb]->GetBinContent( ij, mhti, 3 );
+                            wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, 2 )+WJ_[nb]->GetBinContent( ij, mhti, 3 );
+                            ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, 2)+tt_[nb]->GetBinContent( ij, mhti, 3);
+                            SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, 2)+WJSL_[nb]->GetBinContent(ij, mhti, 3)+ttSL_[nb]->GetBinContent(ij, mhti, 2)+ttSL_[nb]->GetBinContent(ij, mhti, 3);
+                            QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, 2)+QCDSL_[nb]->GetBinContent(ij, mhti, 3);
+                            ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, 2)+zSL_[nb]->GetBinContent(ij, mhti, 3);
+
+                            
+                            LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, 2)+qcdLDP_[nb]->GetBinContent(ij, mhti, 3);
+                            ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, 2)+ZLDP_[nb]->GetBinContent(ij, mhti, 3);
+                            SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, 2)+WJLDP_[nb]->GetBinContent(ij, mhti, 3)+ttLDP_[nb]->GetBinContent(ij, mhti, 2)+ttLDP_[nb]->GetBinContent(ij, mhti, 3);
+                            
+                            GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, 2)+ziGJet_[nb]->GetBinContent(ij, mhti, 3);
+                            
+                            QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, 2)+qcdPho_[nb]->GetBinContent(ij, mhti, 3);
+                            SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, 2)+WJPho_[nb]->GetBinContent(ij, mhti, 3)+ttPho_[nb]->GetBinContent(ij, mhti, 2)+ttPho_[nb]->GetBinContent(ij, mhti, 3);
+
+                            ++ibin;
+                        }
+                        
+                        if(mhti==2){
+                            if(hti==2)continue;
+                            boxcount=4;
+                            // if(ij==1&& nb==0)++boxcount;
+                            sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000_[nb]->GetBinContent( ij, mhti, 2 );
+                            
+                            sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500SL_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200SL_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400SL_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000SL_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500SL_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000SL_[nb]->GetBinContent( ij, mhti, 2 );
+                            
+                            sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 2 );
+
+                            sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                            
+                            sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000raw_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500raw_[nb]->GetBinContent( ij, mhti, 2 );
+                            sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000raw_[nb]->GetBinContent( ij, mhti, 2 );
+                            
+                            qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, 1 )+qcd_[nb]->GetBinContent( ij, mhti, 2 );
+                            zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, 1 )+ZI_[nb]->GetBinContent( ij, mhti, 2 );
+                            wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, 1 )+WJ_[nb]->GetBinContent( ij, mhti, 2 );
+                            ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, 1)+tt_[nb]->GetBinContent( ij, mhti, 2);
+                            SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, 1)+WJSL_[nb]->GetBinContent(ij, mhti, 2)+ttSL_[nb]->GetBinContent(ij, mhti, 1)+ttSL_[nb]->GetBinContent(ij, mhti, 2);
+                            QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, 1)+QCDSL_[nb]->GetBinContent(ij, mhti, 1);
+                            ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, 1)+zSL_[nb]->GetBinContent(ij, mhti, 2);
+
+                            
+                            LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, 1)+qcdLDP_[nb]->GetBinContent(ij, mhti, 2);
+                            
+                            SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, 1)+WJLDP_[nb]->GetBinContent(ij, mhti, 2)+ttLDP_[nb]->GetBinContent(ij, mhti, 1)+ttLDP_[nb]->GetBinContent(ij, mhti, 2);
+                            ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, 1)+ZLDP_[nb]->GetBinContent(ij, mhti, 2);
+
+                            GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, 1)+ziGJet_[nb]->GetBinContent(ij, mhti, 2);
+                                      QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, 1)+qcdPho_[nb]->GetBinContent(ij, mhti, 2);
+                            SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, 1)+WJPho_[nb]->GetBinContent(ij, mhti, 2)+ttPho_[nb]->GetBinContent(ij, mhti, 1)+ttPho_[nb]->GetBinContent(ij, mhti, 2);
+                            if(hti==3){
+                                boxcount=5;
+                                sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti );
+                                zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti );
+                                wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti );
+                                ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti );
+                                SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti);
+                                QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, hti);
+                                ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, hti);
+
+                                
+                                
+                                LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, hti)+ttLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, hti);
+
+                                
+                                
+                                GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, hti);
+                                QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, hti);
+                                SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, hti)+ttPho_[nb]->GetBinContent(ij, mhti, hti);
+
+                            }
+                            //std::cout<<"Ibin "<<ibin<<"nj "<<ij<<" nb "<<nb<<" hti "<< hti<<" mhti "<<mhti<<std::endl;
+
+                            ++ibin;
+                        }
+                        
+                        if(nb>=2)fprintf(fp, "HT-MHTBin%d jetbin%d btag%d & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f  & %4.2f & %4.2f  \\\\ \n", boxcount,ij, nb,qcd[ibin-1], ttbar[ibin-1],zi[ibin-1],wj[ibin-1],sig4t1500[ibin-1],sig4t1200[ibin-1],sig4q1400[ibin-1],sig4q1000[ibin-1],sig4b1500[ibin-1],sig4b1000[ibin-1] );
+                        Bbins[ibin-1]=nb;
+                        njbins[ibin-1]=ij;
+                        mbins[ibin-1]=boxcount;
+
                     }
-                    
-                    if(nb>=2)fprintf(fp, "HT-MHTBin%d jetbin%d btag%d & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f  & %4.2f & %4.2f  \\\\ \n", boxcount,ij, nb,qcd[ibin-1], ttbar[ibin-1],zi[ibin-1],wj[ibin-1],sig4t1500[ibin-1],sig4t1200[ibin-1],sig4q1400[ibin-1],sig4q1000[ibin-1],sig4b1500[ibin-1],sig4b1000[ibin-1] );
-                    Bbins[ibin-1]=nb;
-                    njbins[ibin-1]=ij;
-                    mbins[ibin-1]=boxcount;
-
                 }
             }
         }
     }
+
+    ////////////////////////////////////
+    // SMJ
+    if (doSMJ == 1){
+        for ( int ij=1; ij<=3; ij++ ) {
+            for(int nb=0; nb<=3; nb++){
+                for ( int mhti=1; mhti<=3; mhti++ ){
+                    for ( int hti=1; hti<=3; hti++ ) {
+
+                        //if(hti<2 && mhti==3) continue;                        
+                        if(mhti==1){
+                            // boxcount = 1,2,3
+                            if (hti==2) continue;
+
+                            if (hti==1){
+
+                                boxcount=1;
+                                sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, hti )+sig4t1500_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, hti )+sig4t1200_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, hti )+sig4q1400_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti )+sig4q1000_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti )+sig4b1500_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti )+sig4b1000_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                
+                                sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti )+sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti )+sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti )+sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                
+                                sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti )+sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti )+sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti )+sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti )+sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti )+sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti )+sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                
+                                sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                
+                                sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                
+                                qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti )+qcd_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti )+ZI_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti )+WJ_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti )+tt_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti)+WJSL_[nb]->GetBinContent(ij, mhti, hti+1)+ttSL_[nb]->GetBinContent(ij, mhti, hti+1);
+                                QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, hti)+QCDSL_[nb]->GetBinContent(ij, mhti, hti+1);
+                                ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, hti)+zSL_[nb]->GetBinContent(ij, mhti, hti+1);
+
+                                LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti)+qcdLDP_[nb]->GetBinContent(ij, mhti, hti+1);
+                                SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, hti)+ttLDP_[nb]->GetBinContent(ij, mhti, hti)+WJLDP_[nb]->GetBinContent(ij, mhti, hti+1)+ttLDP_[nb]->GetBinContent(ij, mhti, hti+1);
+                                ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, hti)+ZLDP_[nb]->GetBinContent(ij, mhti, hti+1);
+                                
+                                GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, hti)+ziGJet_[nb]->GetBinContent(ij, mhti, hti+1);
+                                QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, hti)+qcdPho_[nb]->GetBinContent(ij, mhti, hti+1);
+                                SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, hti)+ttPho_[nb]->GetBinContent(ij, mhti, hti)+WJPho_[nb]->GetBinContent(ij, mhti, hti+1)+ttPho_[nb]->GetBinContent(ij, mhti, hti+1);
+                                
+                                ++ibin;
+                            }
+                            if (hti==3){
+
+                                boxcount=2;
+                                sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti );
+                                zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti );
+                                wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti );
+                                ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti );
+                                SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti);
+                                QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, hti);
+                                ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, hti);
+
+                                
+                                LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, hti)+ttLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                
+                                GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, hti);
+                                QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, hti);
+                                SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, hti)+ttPho_[nb]->GetBinContent(ij, mhti, hti);
+                                
+                                ++ibin;
+                            }
+
+                            
+                        }
+                        
+                        if(mhti==2){
+                            if(hti==2)continue;
+
+                            if (hti==1){
+                                boxcount=4;
+                                // if(ij==1&& nb==0)++boxcount;
+                                sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000_[nb]->GetBinContent( ij, mhti, 2 );
+                                
+                                sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500SL_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200SL_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400SL_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000SL_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500SL_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000SL_[nb]->GetBinContent( ij, mhti, 2 );
+                                
+                                sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500LDP_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000LDP_[nb]->GetBinContent( ij, mhti, 2 );
+
+                                sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000Pho_[nb]->GetBinContent( ij, mhti, 2 );
+                                
+                                sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4q1000raw_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1500raw_[nb]->GetBinContent( ij, mhti, 2 );
+                                sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, 1 )+sig4b1000raw_[nb]->GetBinContent( ij, mhti, 2 );
+                                
+                                qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, 1 )+qcd_[nb]->GetBinContent( ij, mhti, 2 );
+                                zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, 1 )+ZI_[nb]->GetBinContent( ij, mhti, 2 );
+                                wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, 1 )+WJ_[nb]->GetBinContent( ij, mhti, 2 );
+                                ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, 1)+tt_[nb]->GetBinContent( ij, mhti, 2);
+                                SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, 1)+WJSL_[nb]->GetBinContent(ij, mhti, 2)+ttSL_[nb]->GetBinContent(ij, mhti, 1)+ttSL_[nb]->GetBinContent(ij, mhti, 2);
+                                QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, 1)+QCDSL_[nb]->GetBinContent(ij, mhti, 1);
+                                ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, 1)+zSL_[nb]->GetBinContent(ij, mhti, 2);
+
+                                
+                                LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, 1)+qcdLDP_[nb]->GetBinContent(ij, mhti, 2);
+                                
+                                SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, 1)+WJLDP_[nb]->GetBinContent(ij, mhti, 2)+ttLDP_[nb]->GetBinContent(ij, mhti, 1)+ttLDP_[nb]->GetBinContent(ij, mhti, 2);
+                                ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, 1)+ZLDP_[nb]->GetBinContent(ij, mhti, 2);
+
+                                GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, 1)+ziGJet_[nb]->GetBinContent(ij, mhti, 2);
+                                          QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, 1)+qcdPho_[nb]->GetBinContent(ij, mhti, 2);
+                                SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, 1)+WJPho_[nb]->GetBinContent(ij, mhti, 2)+ttPho_[nb]->GetBinContent(ij, mhti, 1)+ttPho_[nb]->GetBinContent(ij, mhti, 2);
+                                ++ibin;
+
+                            }
+                            if(hti==3){
+                                boxcount=5;
+                                sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti );
+                                zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti );
+                                wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti );
+                                ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti );
+                                SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti);
+                                QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, hti);
+                                ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, hti);
+
+                                LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, hti)+ttLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                
+                                GJet[ibin]= ziGJet_[nb]->GetBinContent(ij, mhti, hti);
+                                QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, hti);
+                                SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, hti)+ttPho_[nb]->GetBinContent(ij, mhti, hti);
+    
+                                ++ibin;
+
+                            }
+                            //std::cout<<"Ibin "<<ibin<<"nj "<<ij<<" nb "<<nb<<" hti "<< hti<<" mhti "<<mhti<<std::endl;
+                        }
+
+                        if(mhti==3){
+                            if(hti==2) continue;
+
+                            if(hti==3){
+                                boxcount = 6;
+                                sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti );
+
+                                sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti );
+                                sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti );
+                                
+                                qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti );
+                                zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti );
+                                wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti );
+                                ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti);
+                                SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti);
+                                QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, hti);
+                                ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, hti);
+                                
+                                LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, hti)+ttLDP_[nb]->GetBinContent(ij, mhti, hti);
+                                
+                                GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, hti);
+                                
+                                QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, hti);
+                                SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, hti)+ttPho_[nb]->GetBinContent(ij, mhti, hti);
+
+                                ++ibin;
+                            }                            
+
+                            if(hti==1){
+                                boxcount = 5;
+                                sig4t1500[ibin]=sig4t1500_[nb]->GetBinContent( ij, mhti, hti )+sig4t1500_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4t1200[ibin]=sig4t1200_[nb]->GetBinContent( ij, mhti, hti )+sig4t1200_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1400[ibin]=sig4q1400_[nb]->GetBinContent( ij, mhti, hti )+sig4q1400_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1000[ibin]=sig4q1000_[nb]->GetBinContent( ij, mhti, hti )+sig4q1000_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1500[ibin]=sig4b1500_[nb]->GetBinContent( ij, mhti, hti )+sig4b1500_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1000[ibin]=sig4b1000_[nb]->GetBinContent( ij, mhti, hti )+sig4b1000_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                
+                                sig4t1500SL[ibin]=sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti )+sig4t1500SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4t1200SL[ibin]=sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti )+sig4t1200SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1400SL[ibin]=sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti )+sig4q1400SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1000SL[ibin]=sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti )+sig4q1000SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1500SL[ibin]=sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti )+sig4b1500SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1000SL[ibin]=sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti )+sig4b1000SL_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                
+                                sig4t1500LDP[ibin]=sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4t1500LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4t1200LDP[ibin]=sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4t1200LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1400LDP[ibin]=sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4q1400LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1000LDP[ibin]=sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4q1000LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1500LDP[ibin]=sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4b1500LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1000LDP[ibin]=sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti )+sig4b1000LDP_[nb]->GetBinContent( ij, mhti, hti+1 );
+
+                                sig4t1500Pho[ibin]=sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4t1500Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4t1200Pho[ibin]=sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4t1200Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1400Pho[ibin]=sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4q1400Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1000Pho[ibin]=sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4q1000Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1500Pho[ibin]=sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4b1500Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1000Pho[ibin]=sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti )+sig4b1000Pho_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                
+                                sig4t1500raw[ibin]=sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti )+sig4t1500raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4t1200raw[ibin]=sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti )+sig4t1200raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1400raw[ibin]=sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti )+sig4q1400raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4q1000raw[ibin]=sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti )+sig4q1000raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1500raw[ibin]=sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti )+sig4b1500raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                sig4b1000raw[ibin]=sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti )+sig4b1000raw_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                
+                                qcd[ibin]=qcd_[nb]->GetBinContent( ij, mhti, hti )+qcd_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                zi[ibin]=ZI_[nb]->GetBinContent( ij, mhti, hti )+ZI_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                wj[ibin]=WJ_[nb]->GetBinContent( ij, mhti, hti )+WJ_[nb]->GetBinContent( ij, mhti, hti+1 );
+                                ttbar[ibin]=tt_[nb]->GetBinContent( ij, mhti, hti)+tt_[nb]->GetBinContent( ij, mhti, hti+1);
+                                SL[ibin]= WJSL_[nb]->GetBinContent(ij, mhti, hti)+WJSL_[nb]->GetBinContent(ij, mhti, hti+1)+ttSL_[nb]->GetBinContent(ij, mhti, hti)+ttSL_[nb]->GetBinContent(ij, mhti, hti+1);
+                                QCDSL[ibin]=QCDSL_[nb]->GetBinContent(ij, mhti, hti)+QCDSL_[nb]->GetBinContent(ij, mhti, hti+1);
+                                ZSL[ibin]=zSL_[nb]->GetBinContent(ij, mhti, hti)+zSL_[nb]->GetBinContent(ij, mhti, hti+1);
+                                
+                                LDP[ibin]= qcdLDP_[nb]->GetBinContent(ij, mhti, hti)+qcdLDP_[nb]->GetBinContent(ij, mhti, hti+1);
+                                ZLDP[ibin]=ZLDP_[nb]->GetBinContent(ij, mhti, hti)+ZLDP_[nb]->GetBinContent(ij, mhti, hti+1);
+                                SLLDP[ibin]=WJLDP_[nb]->GetBinContent(ij, mhti, hti)+WJLDP_[nb]->GetBinContent(ij, mhti, hti+1)+ttLDP_[nb]->GetBinContent(ij, mhti, hti)+ttLDP_[nb]->GetBinContent(ij, mhti, hti+1);
+                                
+                                GJet[ibin] = ziGJet_[nb]->GetBinContent(ij, mhti, hti)+ziGJet_[nb]->GetBinContent(ij, mhti, hti+1);
+                                
+                                QCDPho[ibin]= qcdPho_[nb]->GetBinContent(ij, mhti, hti)+qcdPho_[nb]->GetBinContent(ij, mhti, hti+1);
+                                SLPho[ibin]=WJPho_[nb]->GetBinContent(ij, mhti, hti)+WJPho_[nb]->GetBinContent(ij, mhti, hti+1)+ttPho_[nb]->GetBinContent(ij, mhti, hti)+ttPho_[nb]->GetBinContent(ij, mhti, hti+1);
+
+                                ++ibin;
+                            }
+                        }
+                        
+                        if(nb>=2)fprintf(fp, "HT-MHTBin%d jetbin%d btag%d & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f & %4.2f  & %4.2f & %4.2f  \\\\ \n", boxcount,ij, nb,qcd[ibin-1], ttbar[ibin-1],zi[ibin-1],wj[ibin-1],sig4t1500[ibin-1],sig4t1200[ibin-1],sig4q1400[ibin-1],sig4q1000[ibin-1],sig4b1500[ibin-1],sig4b1000[ibin-1] );
+                        Bbins[ibin-1]=nb;
+                        njbins[ibin-1]=ij;
+                        mbins[ibin-1]=boxcount;
+
+                    }
+                }
+            }
+        }
+    }    
+
     fprintf(fp,"\\hline\n");
     fprintf(fp,"\\end{tabular}}\n");
     fprintf(fp,"\\caption{TEST}\n");
@@ -752,12 +1147,12 @@ void fillEventYields(float lumi=4.0){
 }
 
 //THis prints the data cards with specified Uncertainties (entered by hand for now)
-void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TString Options="", int bin=0){
+void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TString Options="", int bin=0, int doSMJ=0){
     
     float sig[totalbins];
     float sigRaw[totalbins];
     float obs[totalbins];
-    fillEventYields(lumi);
+    fillEventYields(lumi,doSMJ);
     
     for(int i=0; i<totalbins; ++i){
         if(Options=="T1tttt" && mGlu==1500){
@@ -787,7 +1182,10 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
         }
         
         obs[i]=(qcd[i]+ zi[i]+wj[i]+ttbar[i] + (mu*sig[i]));
+
     }
+
+    std::cout << "qcd[bin] = " << qcd[bin] << std::endl;
 
     //std::cout << "bin = " << bin << " " << qcd[bin] << " " << zi[bin] << " " << wj[bin] << " " << ttbar[bin] << " " << sig[bin] << " " << LDP[bin] << " " << SL[bin] << " " << GJet[bin] << std::endl;
 
@@ -855,11 +1253,13 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     else fprintf(fp, "\nrate %g ", 0.000001);
     
     if(qcd[bin]>0.0000000000000000001) fprintf(fp, " %g ", qcd[bin]);
-    else fprintf(fp, " %g ",0.0000001);
+    else fprintf(fp, " %g ",0.001);
     
-    fprintf(fp, " %g ", zi[bin]);
+    if(zi[bin]>0.0000000000000000001) fprintf(fp, " %g ", zi[bin]);
+    else fprintf(fp, " %g ", 0.001);
+    
     if(wj[bin]+ttbar[bin]>0.0000000000000000001)fprintf(fp, " %g ",wj[bin]+ttbar[bin]);
-    else fprintf(fp, " %g ",0.0000001);
+    else fprintf(fp, " %g ",0.001);
     
     //QCD Region 1
     fprintf(fp, " %g ",sigLDP[bin]);
@@ -887,10 +1287,10 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     //// now systematics
     ////////////////////////
     fprintf(fp, "------------\n");
+    float logUErr=100.;
 
     ///--------------------------------------
     /// QCD
-    float logUErr=100.;
     if(LDP[bin]>0.0000000000000000001){
         fprintf(fp, "rateBqcd%d lnU - %8.1f - - ",bin, logUErr );
         fprintf(fp, " - %8.1f - - ",logUErr);
@@ -1062,4 +1462,3 @@ void MakeCombineDataCards(int mGlu, int MLSP, float mu=1.0, float lumi=4, TStrin
     if (Bbins[bin] > 0) fprintf(fp, "\n");
     
 }
-                                                                                                                                                                                                                                                                                                      
