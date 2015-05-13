@@ -88,7 +88,7 @@ class datacard:
 
 		line = "rate";
 		zeroProxy = 0.0001;
-		qcdScaleFactor = 10.;
+		qcdScaleFactor = 1.;
 		for r in range(len(regionlabels)):
 			# print "signalYield[r] = ", signalYield[r]
 			if signalYield[r] < 0.000001: line += " " + str(zeroProxy);

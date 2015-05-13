@@ -45,14 +45,15 @@ if __name__ == '__main__':
 	wp6 = WorkingPointContainer( "qqqq", 1000, binningName, doEachBin);
 
 	wp1.doFullCombination(options.doEachBin)
-	wp1.makeCanvas(ymax);
 	wp2.doFullCombination(options.doEachBin)
-	wp2.makeCanvas(ymax);	
 	wp3.doFullCombination(options.doEachBin)
-	wp3.makeCanvas(ymax);	
 	wp4.doFullCombination(options.doEachBin)
-	wp4.makeCanvas(ymax);
 	wp5.doFullCombination(options.doEachBin)
-	wp5.makeCanvas(ymax);
 	wp6.doFullCombination(options.doEachBin)
-	wp6.makeCanvas(ymax);		
+
+	wp1.makeCanvas(ymax);
+	wp2.makeCanvas(ymax);
+	wp3.makeCanvas(ymax);
+	wp4.makeCanvas(ymax);
+	wp5.makeCanvas(ymax);
+	wp6.makeCanvas(ymax);

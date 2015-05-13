@@ -1,0 +1,8 @@
+# python-based datacard producer 
+# computes limits and significances (based on condor)
+
+> python datacardProduction.py --binning $NAME --lumi $LUMI
+$LUMI: straightforward
+$NAME: defined in binning/binningIndex.py
+
+> python validateCards.py -b --binning $NAME

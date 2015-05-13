@@ -14,9 +14,21 @@ import math
 import sys
 sys.path.insert(0, 'binnings')
 from binning import *
-from RA2bBinning import *
-from SMJBinning_36bins_1 import *
-from SMJBinning_72bins_1 import *
+# from RA2bBinning import *
+# from RA2bBinning_72bins_2 import *
+# from RA2bBinning_72bins_3 import *
+# from RA2bBinning_48bins_3 import *
+# from RA2bBinning_56bins_3 import *
+# from RA2bBinning_64bins_3 import *
+# from SMJBinning_36bins_1 import *
+# from SMJBinning_72bins_1 import *
+# from SMJBinning_72bins_2 import *
+# from SMJBinning_72bins_3 import *
+# from SMJBinning_72bins_4 import *
+# from SMJBinning_48bins_4 import *
+# from SMJBinning_56bins_4 import *
+# from SMJBinning_64bins_4 import *
+
 from binningIndex import *
 
 parser = OptionParser()
